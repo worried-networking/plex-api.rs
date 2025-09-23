@@ -1,0 +1,43 @@
+{
+  "MediaContainer": {
+    "size": 1,
+    "DownloadQueueItem": [
+      {
+        "id": 123,
+        "queueId": 1,
+        "key": "/library/metadata/159637",
+        "status": "processing",
+        "error": null,
+        "transcode": null,
+        "DecisionResult": {
+          "directPlayDecisionCode": 2000,
+          "directPlayDecisionText": "transcode needed"
+        },
+        "TranscodeSession": {
+          "key": "abc123",
+          "throttled": false,
+          "complete": false,
+          "progress": 25.5,
+          "size": 12345678,
+          "speed": 2.5,
+          "error": false,
+          "duration": 120000,
+          "remaining": 3600,
+          "context": "static",
+          "sourceVideoCodec": "hevc",
+          "sourceAudioCodec": "aac",
+          "videoDecision": "transcode",
+          "audioDecision": "transcode",
+          "protocol": "http",
+          "container": "mp4",
+          "videoCodec": "h264",
+          "audioCodec": "mp3",
+          "audioChannels": 2,
+          "width": 1280,
+          "height": 720,
+          "transcodeHwRequested": false
+        }
+      }
+    ]
+  }
+}

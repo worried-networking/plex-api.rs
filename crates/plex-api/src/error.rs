@@ -80,6 +80,12 @@ pub enum Error {
     TranscodeError(String),
     #[error("The server thinks the client should just play the original media.")]
     TranscodeRefused,
+    #[error("Transcoding is incomplete.")]
+    TranscodeIncomplete,
+    #[error("Invalid header value.")]
+    InvalidHeaderValue,
+    #[error("Unknown container format.")]
+    UnknownContainerFormat(String),
     #[error("Only invites with status pending_received can be accepted.")]
     InviteAcceptingNotPendingReceived,
     #[error("Unexpected error. Please create a bug report.")]

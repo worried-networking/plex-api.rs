@@ -15,11 +15,13 @@ use crate::{
         },
         MediaContainerWrapper,
     },
-    transcode::{MusicTranscodeOptions, TranscodeSession, VideoTranscodeOptions},
+    transcode::{
+        download_queue::{DownloadQueue, QueueItem},
+        session::{create_transcode_session, TranscodeSession},
+        Context, MusicTranscodeOptions, TranscodeOptions, VideoTranscodeOptions,
+    },
     Error, HttpClient, Result,
 };
-
-use super::transcode::{create_transcode_session, Context, TranscodeOptions};
 
 pub trait FromMetadata {
     /// Creates an item given the http configuration and item metadata. No
@@ -188,7 +190,7 @@ impl<'a, M: MediaItem> Media<'a, M> {
     }
 }
 
-impl<'a, M: MediaItemWithTranscoding + MediaItem + Sync> MediaItemWithTranscoding for Media<'a, M> {
+impl<'a, M: Transcodable + MediaItem + Sync> Transcodable for Media<'a, M> {
     type Options = M::Options;
 
     #[tracing::instrument(level = "debug", skip_all)]
@@ -221,6 +223,23 @@ impl<'a, M: MediaItemWithTranscoding + MediaItem + Sync> MediaItemWithTranscodin
             options,
         )
         .await
+    }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn queue_download(
+        &self,
+        options: Self::Options,
+        download_queue: Option<&DownloadQueue>,
+    ) -> Result<QueueItem> {
+        let queue = if let Some(q) = download_queue {
+            q.clone()
+        } else {
+            DownloadQueue::get_or_create(self.client.clone()).await?
+        };
+
+        queue
+            .add_item(self.parent_metadata, Some(self.media_index), None, options)
+            .await
     }
 }
 
@@ -294,7 +313,7 @@ impl<'a, M: MediaItem> Part<'a, M> {
     }
 }
 
-impl<'a, M: MediaItemWithTranscoding + MediaItem + Sync> MediaItemWithTranscoding for Part<'a, M> {
+impl<'a, M: Transcodable + MediaItem + Sync> Transcodable for Part<'a, M> {
     type Options = M::Options;
 
     #[tracing::instrument(level = "debug", skip_all)]
@@ -328,6 +347,28 @@ impl<'a, M: MediaItemWithTranscoding + MediaItem + Sync> MediaItemWithTranscodin
         )
         .await
     }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn queue_download(
+        &self,
+        options: Self::Options,
+        download_queue: Option<&DownloadQueue>,
+    ) -> Result<QueueItem> {
+        let queue = if let Some(q) = download_queue {
+            q.clone()
+        } else {
+            DownloadQueue::get_or_create(self.client.clone()).await?
+        };
+
+        queue
+            .add_item(
+                self.parent_metadata,
+                Some(self.media_index),
+                Some(self.part_index),
+                options,
+            )
+            .await
+    }
 }
 
 /// Represents some playable media. In Plex each playable item can be available
@@ -355,13 +396,14 @@ pub trait MediaItem: MetadataItem + Sized {
     }
 }
 
-pub trait MediaItemWithTranscoding {
+pub trait Transcodable {
     type Options: TranscodeOptions + Send;
 
     /// Starts an offline transcode using the provided options.
     ///
     /// The server may refuse to transcode if the options suggest that the
-    /// original media file can be played back directly.
+    /// original media file can be played back directly. Sometimes starting a
+    /// new download session will cancel an existing session.
     ///
     /// Can't be called on media other than Movie, Episode or Track.
     fn create_download_session(
@@ -378,6 +420,18 @@ pub trait MediaItemWithTranscoding {
         protocol: Protocol,
         options: Self::Options,
     ) -> impl Future<Output = Result<TranscodeSession>> + Send;
+
+    /// Queues this item for download using the provided download queue.
+    ///
+    /// This is a newer API and should be preferred over
+    /// `create_download_session`. Many items can be added to the same download
+    /// queue, the server will automatically transcode them if necessary based
+    /// on the limits set in the server settings.
+    fn queue_download(
+        &self,
+        options: Self::Options,
+        download_queue: Option<&DownloadQueue>,
+    ) -> impl Future<Output = Result<QueueItem>> + Send;
 }
 
 /// A video that can be included in a video playlist.
@@ -399,7 +453,7 @@ impl FromMetadata for Video {
 }
 
 impl MediaItem for Video {}
-impl MediaItemWithTranscoding for Video {
+impl Transcodable for Video {
     type Options = VideoTranscodeOptions;
 
     #[tracing::instrument(level = "debug", skip_all)]
@@ -432,6 +486,21 @@ impl MediaItemWithTranscoding for Video {
             options,
         )
         .await
+    }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn queue_download(
+        &self,
+        options: Self::Options,
+        download_queue: Option<&DownloadQueue>,
+    ) -> Result<QueueItem> {
+        let queue = if let Some(q) = download_queue {
+            q.clone()
+        } else {
+            DownloadQueue::get_or_create(self.client().clone()).await?
+        };
+
+        queue.add_item(self.metadata(), None, None, options).await
     }
 }
 
@@ -503,7 +572,7 @@ derive_from_metadata!(Movie);
 derive_metadata_item!(Movie);
 
 impl MediaItem for Movie {}
-impl MediaItemWithTranscoding for Movie {
+impl Transcodable for Movie {
     type Options = VideoTranscodeOptions;
 
     #[tracing::instrument(level = "debug", skip_all)]
@@ -536,6 +605,21 @@ impl MediaItemWithTranscoding for Movie {
             options,
         )
         .await
+    }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn queue_download(
+        &self,
+        options: Self::Options,
+        download_queue: Option<&DownloadQueue>,
+    ) -> Result<QueueItem> {
+        let queue = if let Some(q) = download_queue {
+            q.clone()
+        } else {
+            DownloadQueue::get_or_create(self.client.clone()).await?
+        };
+
+        queue.add_item(self.metadata(), None, None, options).await
     }
 }
 
@@ -600,7 +684,7 @@ derive_from_metadata!(Episode);
 derive_metadata_item!(Episode);
 
 impl MediaItem for Episode {}
-impl MediaItemWithTranscoding for Episode {
+impl Transcodable for Episode {
     type Options = VideoTranscodeOptions;
 
     #[tracing::instrument(level = "debug", skip_all)]
@@ -633,6 +717,21 @@ impl MediaItemWithTranscoding for Episode {
             options,
         )
         .await
+    }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn queue_download(
+        &self,
+        options: Self::Options,
+        download_queue: Option<&DownloadQueue>,
+    ) -> Result<QueueItem> {
+        let queue = if let Some(q) = download_queue {
+            q.clone()
+        } else {
+            DownloadQueue::get_or_create(self.client.clone()).await?
+        };
+
+        queue.add_item(self.metadata(), None, None, options).await
     }
 }
 
@@ -721,7 +820,7 @@ derive_from_metadata!(Track);
 derive_metadata_item!(Track);
 
 impl MediaItem for Track {}
-impl MediaItemWithTranscoding for Track {
+impl Transcodable for Track {
     type Options = MusicTranscodeOptions;
 
     #[tracing::instrument(level = "debug", skip_all)]
@@ -754,6 +853,21 @@ impl MediaItemWithTranscoding for Track {
             options,
         )
         .await
+    }
+
+    #[tracing::instrument(level = "debug", skip_all)]
+    async fn queue_download(
+        &self,
+        options: Self::Options,
+        download_queue: Option<&DownloadQueue>,
+    ) -> Result<QueueItem> {
+        let queue = if let Some(q) = download_queue {
+            q.clone()
+        } else {
+            DownloadQueue::get_or_create(self.client.clone()).await?
+        };
+
+        queue.add_item(self.metadata(), None, None, options).await
     }
 }
 

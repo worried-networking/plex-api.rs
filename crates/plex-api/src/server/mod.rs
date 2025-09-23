@@ -6,8 +6,8 @@ use self::{
     library::{metadata_items, FromMetadata, Item, Library, MediaItem, MetadataItem},
     prefs::Preferences,
     transcode::{
-        transcode_artwork, transcode_session_stats, ArtTranscodeOptions, TranscodeSession,
-        TranscodeSessionsMediaContainer,
+        session::{transcode_session_stats, TranscodeSession, TranscodeSessionsMediaContainer},
+        transcode_artwork, ArtTranscodeOptions,
     },
 };
 #[cfg(not(feature = "tests_deny_unknown_fields"))]
@@ -20,6 +20,7 @@ use crate::{
         MediaContainerWrapper,
     },
     myplex::MyPlex,
+    transcode::download_queue::DownloadQueue,
     url::{
         SERVER_MEDIA_PROVIDERS, SERVER_MYPLEX_ACCOUNT, SERVER_MYPLEX_CLAIM, SERVER_SCROBBLE,
         SERVER_TIMELINE, SERVER_TRANSCODE_SESSIONS, SERVER_UNSCROBBLE,
@@ -328,5 +329,9 @@ impl Server {
 
     pub fn machine_identifier(&self) -> &str {
         &self.media_container.machine_identifier
+    }
+
+    pub async fn download_queue(&self) -> Result<DownloadQueue> {
+        DownloadQueue::get_or_create(self.client.clone()).await
     }
 }

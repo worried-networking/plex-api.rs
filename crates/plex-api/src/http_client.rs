@@ -157,6 +157,21 @@ impl HttpClient {
         }
     }
 
+    /// Begins building a request using the HTTP HEAD method.
+    pub fn head<T>(&self, path: T) -> RequestBuilder<'_, T>
+    where
+        PathAndQuery: TryFrom<T>,
+        <PathAndQuery as TryFrom<T>>::Error: Into<http::Error>,
+    {
+        RequestBuilder {
+            http_client: &self.http_client,
+            base_url: self.api_url.clone(),
+            path_and_query: path,
+            request_builder: self.prepare_request().method("HEAD"),
+            timeout: Some(DEFAULT_TIMEOUT),
+        }
+    }
+
     /// Begins building a request using the HTTP GET method.
     pub fn get<T>(&self, path: T) -> RequestBuilder<'_, T>
     where

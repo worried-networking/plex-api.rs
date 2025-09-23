@@ -1,0 +1,19 @@
+{
+  "MediaContainer": {
+    "size": 1,
+    "DownloadQueueItem": [
+      {
+        "id": 123,
+        "queueId": 1,
+        "key": "/library/metadata/159637",
+        "status": "waiting",
+        "error": null,
+        "transcode": null,
+        "DecisionResult": {
+          "directPlayDecisionCode": 2000,
+          "directPlayDecisionText": "transcode needed"
+        }
+      }
+    ]
+  }
+}

@@ -47,3 +47,9 @@ pub const SERVER_TIMELINE: &str = "/:/timeline";
 pub const CLIENT_RESOURCES: &str = "/resources";
 
 pub const MYPLEX_DISCOVER_API_BASE_URL: &str = "https://discover.provider.plex.tv/";
+
+pub const DOWNLOAD_QUEUE_CREATE: &str = "/downloadQueue";
+pub const DOWNLOAD_QUEUE_LIST: &str = "/downloadQueue/{queueId}/items";
+pub const DOWNLOAD_QUEUE_ITEM: &str = "/downloadQueue/{queueId}/items/{itemId}";
+pub const DOWNLOAD_QUEUE_ADD: &str = "/downloadQueue/{queueId}/add";
+pub const DOWNLOAD_QUEUE_DOWNLOAD: &str = "/downloadQueue/{queueId}/item/{itemId}/media";

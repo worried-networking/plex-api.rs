@@ -226,7 +226,7 @@ mod offline {
     mod movie {
         use super::*;
         use plex_api::{
-            library::{MediaItem, MediaItemWithTranscoding, Movie},
+            library::{MediaItem, Movie, Transcodable},
             media_container::server::library::SubtitleCodec,
             transcode::{AudioSetting, Constraint, VideoSetting, VideoTranscodeOptions},
         };
@@ -422,7 +422,7 @@ mod offline {
                         (
                             VideoCodec::Vp9,
                             VideoSetting::Profile,
-                            Constraint::Match(vec!["main".to_string(), "baseline".to_string()]),
+                            Constraint::MatchList(vec!["main".to_string(), "baseline".to_string()]),
                         )
                             .into(),
                     ],
@@ -964,7 +964,7 @@ mod offline {
     mod music {
         use super::*;
         use plex_api::{
-            library::{MediaItem, MediaItemWithTranscoding, Track},
+            library::{MediaItem, Track, Transcodable},
             transcode::{AudioSetting, Constraint, MusicTranscodeOptions},
         };
 
@@ -1354,7 +1354,7 @@ mod online {
         use isahc::AsyncReadResponseExt;
         use mp4::{AvcProfile, MediaType, Mp4Reader, TrackType};
         use plex_api::{
-            library::{MediaItem, MediaItemWithTranscoding, MetadataItem, Movie},
+            library::{MediaItem, MetadataItem, Movie, Transcodable},
             media_container::server::Feature,
             transcode::VideoTranscodeOptions,
         };
@@ -2044,7 +2044,7 @@ mod online {
         use hls_m3u8::{tags::VariantStream, MasterPlaylist, MediaPlaylist};
         use isahc::AsyncReadResponseExt;
         use plex_api::{
-            library::{MediaItem, MediaItemWithTranscoding, MetadataItem, Track},
+            library::{MediaItem, MetadataItem, Track, Transcodable},
             media_container::server::Feature,
             transcode::MusicTranscodeOptions,
         };

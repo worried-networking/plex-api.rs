@@ -1,0 +1,14 @@
+{
+  "MediaContainer": {
+    "size": 1,
+    "DownloadQueue": [
+      {
+        "id": 1,
+        "owner": 1,
+        "clientIdentifier": "test-client",
+        "itemCount": 0,
+        "status": "waiting"
+      }
+    ]
+  }
+}
