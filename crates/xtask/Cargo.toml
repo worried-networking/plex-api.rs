@@ -20,7 +20,7 @@ plex-api = { path = "../plex-api" }
 tokio = { version = "^1.23", features = ["rt-multi-thread", "time"] }
 walkdir = "^2"
 semver = "^1.0.16"
-ureq = "^2.6.0"
+ureq = "^3.1.2"
 regex = "^1.7"
 testcontainers = "^0.25"
 pathdiff = "^0.2.1"

@@ -1,6 +1,6 @@
 use crate::flags;
 use regex::Regex;
-use std::cmp::Ordering;
+use std::{cmp::Ordering, io::Read};
 
 const VALID_TAGS_REGEXP: &str = r#""name"\s*:\s*"(?P<tag>(?P<semver>latest|beta|plexpass|\d+\.\d+.\d+)(?:\.(?P<build>\d+))?[^"]*)""#;
 
@@ -34,10 +34,13 @@ impl flags::GetLastPlexTags {
             "https://hub.docker.com/v2/repositories/{DOCKER_PLEX_IMAGE_NAME}/tags/?page_size=100&page=1"
         );
 
-        let available_tags = ureq::get(&url)
-            .set("Accept", "application/json")
+        let mut reader = ureq::get(&url)
+            .header("Accept", "application/json")
             .call()?
-            .into_string()?;
+            .into_body()
+            .into_reader();
+        let mut available_tags = String::new();
+        reader.read_to_string(&mut available_tags)?;
 
         let re = Regex::new(VALID_TAGS_REGEXP)?;
         let mut tags: Vec<(SemverOrString, &str)> = re
