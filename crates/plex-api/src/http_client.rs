@@ -489,7 +489,7 @@ impl Default for HttpClientBuilder {
             x_plex_device_name: sys_hostname,
             x_plex_client_identifier: random_uuid.to_string(),
             x_plex_sync_version: String::from("2"),
-            x_plex_token: SecretString::new("".to_owned()),
+            x_plex_token: SecretString::new("".into()),
             x_plex_model: String::from("hosted"),
             x_plex_features: String::from("external-media,indirect-media,hub-style-list"),
             x_plex_target_client_identifier: String::from(""),
