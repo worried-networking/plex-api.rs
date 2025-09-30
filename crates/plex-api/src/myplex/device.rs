@@ -79,10 +79,7 @@ impl Device<'_> {
     /// Returns the authentication token that should be used when connecting to the device.
     /// If it's a shared device, the main authentication token will no be accepted.
     pub fn access_token(&self) -> Option<&str> {
-        self.inner
-            .access_token
-            .as_ref()
-            .map(|v| v.expose_secret().as_str())
+        self.inner.access_token.as_ref().map(|v| v.expose_secret())
     }
 
     /// Connect to the device.

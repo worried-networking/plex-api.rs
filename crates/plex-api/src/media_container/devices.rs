@@ -101,7 +101,7 @@ pub struct Device {
 }
 
 fn create_empty_secret_string() -> SecretString {
-    SecretString::new("".to_string())
+    SecretString::new("".into())
 }
 
 #[derive(Debug, Deserialize, Clone)]
