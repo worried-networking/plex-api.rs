@@ -14,6 +14,7 @@ use self::{
 use crate::media_container::server::library::LibraryType;
 use crate::{
     http_client::HttpClient,
+    isahc_compat::StatusCodeExt,
     media_container::{
         server::{library::ContentDirectory, MediaProviderFeature, Server as ServerMediaContainer},
         MediaContainerWrapper,
@@ -285,7 +286,7 @@ impl Server {
         );
         let mut response = self.client.post(url).send().await?;
 
-        if response.status() == StatusCode::OK {
+        if response.status().as_http_status() == StatusCode::OK {
             response.consume().await?;
             self.refresh().await
         } else {
@@ -297,7 +298,7 @@ impl Server {
     pub async fn unclaim(self) -> Result<Self> {
         let mut response = self.client.delete(SERVER_MYPLEX_ACCOUNT).send().await?;
 
-        if response.status() == StatusCode::OK {
+        if response.status().as_http_status() == StatusCode::OK {
             response.consume().await?;
             self.refresh().await
         } else {

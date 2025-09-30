@@ -30,6 +30,11 @@ pub enum Error {
         source: http::Error,
     },
     #[error("{source}")]
+    IsahcHttpError {
+        #[from]
+        source: isahc::http::Error,
+    },
+    #[error("{source}")]
     IsahcError {
         #[from]
         source: isahc::Error,

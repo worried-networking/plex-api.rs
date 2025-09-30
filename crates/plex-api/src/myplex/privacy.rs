@@ -1,4 +1,6 @@
-use crate::{http_client::HttpClient, url::MYPLEX_PRIVACY_PATH, Error};
+use crate::{
+    http_client::HttpClient, isahc_compat::StatusCodeExt, url::MYPLEX_PRIVACY_PATH, Error,
+};
 use http::StatusCode;
 use serde::Deserialize;
 
@@ -62,7 +64,7 @@ impl Privacy {
             .form(&params)?
             .send()
             .await?;
-        if response.status() == StatusCode::NO_CONTENT {
+        if response.status().as_http_status() == StatusCode::NO_CONTENT {
             self.opt_out_library_stats = opt_out_library_stats;
             self.opt_out_playback = opt_out_playback;
             Ok(())

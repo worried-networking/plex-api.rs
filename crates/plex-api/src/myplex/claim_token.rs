@@ -1,6 +1,9 @@
 use std::fmt::Display;
 
-use crate::{http_client::HttpClient, url::MYPLEX_CLAIM_TOKEN_PATH, Error, Result};
+use crate::{
+    http_client::HttpClient, isahc_compat::StatusCodeExt, url::MYPLEX_CLAIM_TOKEN_PATH, Error,
+    Result,
+};
 use http::StatusCode;
 use isahc::AsyncReadResponseExt;
 use serde::{Deserialize, Serialize};
@@ -32,7 +35,7 @@ impl ClaimToken {
     #[tracing::instrument(level = "debug", skip_all)]
     pub async fn new(client: &HttpClient) -> Result<Self> {
         let mut response = client.get(MYPLEX_CLAIM_TOKEN_PATH).send().await?;
-        match response.status() {
+        match response.status().as_http_status() {
             StatusCode::OK => {
                 let token = response.json::<SuccessResponse>().await?.token;
                 Ok(Self {

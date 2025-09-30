@@ -21,6 +21,7 @@ use uuid::Uuid;
 
 use crate::{
     error,
+    isahc_compat::StatusCodeExt,
     media_container::{
         server::{
             library::{
@@ -641,7 +642,7 @@ async fn transcode_decision(client: &HttpClient, params: &Query) -> Result<Media
         .send()
         .await?;
 
-    let text = match response.status() {
+    let text = match response.status().as_http_status() {
         StatusCode::OK => response.text().await?,
         _ => return Err(crate::Error::from_response(response).await),
     };
@@ -917,7 +918,7 @@ impl TranscodeSession {
         }
         let mut response = builder.send().await?;
 
-        match response.status() {
+        match response.status().as_http_status() {
             StatusCode::OK => {
                 response.copy_to(writer).await?;
                 Ok(())
@@ -962,7 +963,7 @@ impl TranscodeSession {
             .send()
             .await?;
 
-        match response.status() {
+        match response.status().as_http_status() {
             // Sometimes the server will respond not found but still cancel the
             // session.
             StatusCode::OK | StatusCode::NOT_FOUND => Ok(response.consume().await?),
@@ -1013,7 +1014,7 @@ where
         .send()
         .await?;
 
-    match response.status() {
+    match response.status().as_http_status() {
         // Sometimes the server will respond not found but still cancel the
         // session.
         StatusCode::OK => {

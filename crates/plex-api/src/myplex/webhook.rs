@@ -1,4 +1,6 @@
-use crate::{http_client::HttpClient, url::MYPLEX_WEBHOOKS_PATH, Error, Result};
+use crate::{
+    http_client::HttpClient, isahc_compat::StatusCodeExt, url::MYPLEX_WEBHOOKS_PATH, Error, Result,
+};
 use http::{StatusCode, Uri};
 use serde::Deserialize;
 use std::fmt::Debug;
@@ -60,7 +62,7 @@ impl WebhookManager {
             .form(&params)?
             .send()
             .await?;
-        if response.status() == StatusCode::CREATED {
+        if response.status().as_http_status() == StatusCode::CREATED {
             self.webhooks = webhooks;
             Ok(())
         } else {

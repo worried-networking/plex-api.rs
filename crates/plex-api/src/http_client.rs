@@ -1,8 +1,8 @@
-use crate::{url::MYPLEX_DEFAULT_API_URL, Result};
-use http::{uri::PathAndQuery, HeaderValue, StatusCode, Uri};
+use crate::{isahc_compat::StatusCodeExt, url::MYPLEX_DEFAULT_API_URL, Result};
+use http::{uri::PathAndQuery, StatusCode, Uri};
 use isahc::{
     config::{Configurable, RedirectPolicy},
-    http::request::Builder,
+    http::{request::Builder, HeaderValue as IsahcHeaderValue},
     AsyncBody, AsyncReadResponseExt, HttpClient as IsahcHttpClient, Request as HttpRequest,
     Response as HttpResponse,
 };
@@ -311,8 +311,9 @@ where
         let mut uri_parts = self.base_url.into_parts();
         uri_parts.path_and_query = Some(path_and_query);
         let uri = Uri::from_parts(uri_parts).map_err(Into::<http::Error>::into)?;
+        let uri_string = uri.to_string();
 
-        let mut builder = self.request_builder.uri(uri);
+        let mut builder = self.request_builder.uri(uri_string);
         if let Some(timeout) = self.timeout {
             builder = builder.timeout(timeout);
         }
@@ -345,10 +346,10 @@ where
     #[must_use]
     pub fn header<K, V>(self, key: K, value: V) -> Self
     where
-        http::header::HeaderName: TryFrom<K>,
-        <http::header::HeaderName as TryFrom<K>>::Error: Into<http::Error>,
-        http::header::HeaderValue: TryFrom<V>,
-        <http::header::HeaderValue as TryFrom<V>>::Error: Into<http::Error>,
+        isahc::http::header::HeaderName: TryFrom<K>,
+        <isahc::http::header::HeaderName as TryFrom<K>>::Error: Into<isahc::http::Error>,
+        isahc::http::header::HeaderValue: TryFrom<V>,
+        <isahc::http::header::HeaderValue as TryFrom<V>>::Error: Into<isahc::http::Error>,
     {
         Self {
             http_client: self.http_client,
@@ -378,7 +379,7 @@ where
     pub async fn consume(self) -> Result<()> {
         let mut response = self.header("Accept", "application/json").send().await?;
 
-        match response.status() {
+        match response.status().as_http_status() {
             StatusCode::OK => {
                 response.consume().await?;
                 Ok(())
@@ -405,11 +406,11 @@ where
     /// Sends this request and attempts to decode the response as JSON.
     pub async fn json<R: DeserializeOwned + Unpin>(mut self) -> Result<R> {
         let headers = self.request.headers_mut();
-        headers.insert("Accept", HeaderValue::from_static("application/json"));
+        headers.insert("Accept", IsahcHeaderValue::from_static("application/json"));
 
         let mut response = self.send().await?;
 
-        match response.status() {
+        match response.status().as_http_status() {
             StatusCode::OK | StatusCode::CREATED | StatusCode::ACCEPTED => {
                 let body = response.text().await?;
                 match serde_json::from_str(&body) {
@@ -432,11 +433,11 @@ where
     /// Sends this request and attempts to decode the response as XML.
     pub async fn xml<R: DeserializeOwned + Unpin>(mut self) -> Result<R> {
         let headers = self.request.headers_mut();
-        headers.insert("Accept", HeaderValue::from_static("application/xml"));
+        headers.insert("Accept", IsahcHeaderValue::from_static("application/xml"));
 
         let mut response = self.send().await?;
 
-        match response.status() {
+        match response.status().as_http_status() {
             StatusCode::OK | StatusCode::CREATED | StatusCode::ACCEPTED => {
                 let body = response.text().await?;
                 match quick_xml::de::from_str(&body) {
