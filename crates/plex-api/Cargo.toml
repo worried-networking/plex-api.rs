@@ -45,7 +45,7 @@ plex-api-test-helper = { path = "../plex-api-test-helper" }
 rstest = "^0.26.1"
 rpassword = "^7.2"
 dash-mpd = { version = "^0.16.0", default-features = false }
-hls_m3u8 = "^0.4.1"
+hls_m3u8 = "^0.5.1"
 mp4 = "^0.14.0"
 mp3-metadata = "^0.4.0"
 image = "^0.25.0"
