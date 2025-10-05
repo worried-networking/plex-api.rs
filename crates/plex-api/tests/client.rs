@@ -3,7 +3,7 @@ mod fixtures;
 mod offline {
     use super::fixtures::offline::mock_server;
     use httpmock::{Method::GET, MockServer};
-    use isahc::HttpClient;
+    use http_adapter::Client;
     use plex_api::HttpClientBuilder;
     use std::time::Duration;
 
@@ -116,17 +116,31 @@ mod offline {
 
     #[plex_api_test_helper::offline_test]
     async fn custom_http_client(mock_server: MockServer) {
-        use isahc::config::Configurable as _;
+        #[cfg(feature = "http-client-isahc")]
+        let http_client = {
+            use isahc::config::Configurable as _;
+            let client = isahc::HttpClient::builder()
+                .timeout(Duration::from_secs(1))
+                .connect_timeout(Duration::from_secs(1))
+                .proxy(Some(mock_server.base_url().parse().unwrap()))
+                .build()
+                .expect("failed to create testing http client");
+            http_adapter_isahc::from_client(client)
+        };
+        
+        #[cfg(all(feature = "http-client-reqwest", not(feature = "http-client-isahc")))]
+        let http_client = {
+            let client = reqwest::Client::builder()
+                .timeout(Duration::from_secs(1))
+                .connect_timeout(Duration::from_secs(1))
+                .proxy(reqwest::Proxy::all(mock_server.base_url()).expect("failed to create proxy"))
+                .build()
+                .expect("failed to create testing http client");
+            http_adapter_reqwest::from_client(client)
+        };
 
         let client = HttpClientBuilder::default()
-            .set_http_client(
-                HttpClient::builder()
-                    .timeout(Duration::from_secs(1))
-                    .connect_timeout(Duration::from_secs(1))
-                    .proxy(Some(mock_server.base_url().parse().unwrap()))
-                    .build()
-                    .expect("failed to create testing http client"),
-            )
+            .set_http_client(http_client)
             .set_api_url("http://plex.tv")
             .set_x_plex_token("auth_token".to_owned())
             .set_x_plex_client_identifier("client_id".to_owned())

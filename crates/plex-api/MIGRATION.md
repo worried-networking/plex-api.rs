@@ -13,9 +13,11 @@ The HTTP client implementation has been refactored to use an abstraction layer i
    - `http-client-reqwest`: Use the `reqwest` HTTP client
 
 2. **Dependency Updates**: 
-   - `isahc` is now an optional dependency
-   - `reqwest` has been added as an optional dependency
+   - `isahc` is no longer a direct dependency
+   - `reqwest` is no longer a direct dependency
    - `http-adapter` v0.3.0 is used as the abstraction layer
+   - `http-adapter-isahc` v0.3.0 provides isahc support
+   - `http-adapter-reqwest` v0.3.0 provides reqwest support
 
 ### How to Migrate
 

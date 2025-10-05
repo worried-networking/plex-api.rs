@@ -1,9 +1,8 @@
 use crate::{
-    isahc_compat::StatusCodeExt, myplex::account::RestrictionProfile, url::MYPLEX_INVITES_FRIENDS,
+    myplex::account::RestrictionProfile, url::MYPLEX_INVITES_FRIENDS,
     Error, HttpClient, Result,
 };
 use http::StatusCode;
-use isahc::AsyncReadResponseExt;
 use serde::{Deserialize, Serialize};
 use serde_plain::derive_display_from_serialize;
 use time::OffsetDateTime;
@@ -93,17 +92,14 @@ impl Friend {
     /// Delete the friend or friendship request.
     #[tracing::instrument(level = "debug", skip(self))]
     pub async fn delete(self) -> Result<()> {
-        let mut response = self
+        let response = self
             .client()
             .delete(format!("{}/{}", MYPLEX_INVITES_FRIENDS, self.id))
             .send()
             .await?;
 
-        match response.status().as_http_status() {
-            StatusCode::OK | StatusCode::NO_CONTENT => {
-                response.consume().await?;
-                Ok(())
-            }
+        match response.status() {
+            StatusCode::OK | StatusCode::NO_CONTENT => Ok(()),
             _ => Err(Error::from_response(response).await),
         }
     }

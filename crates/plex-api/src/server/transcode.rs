@@ -14,14 +14,13 @@ use std::{collections::HashMap, fmt::Display};
 
 use futures::AsyncWrite;
 use http::StatusCode;
-use isahc::AsyncReadResponseExt;
+use http_adapter::Body;
 use serde::{Deserialize, Serialize};
 use serde_plain::derive_display_from_serialize;
 use uuid::Uuid;
 
 use crate::{
     error,
-    isahc_compat::StatusCodeExt,
     media_container::{
         server::{
             library::{
@@ -636,15 +635,25 @@ fn get_transcode_params<O: TranscodeOptions>(
 async fn transcode_decision(client: &HttpClient, params: &Query) -> Result<MediaMetadata> {
     let path = format!("{SERVER_TRANSCODE_DECISION}?{params}");
 
-    let mut response = client
+    let response = client
         .get(path)
         .header("Accept", "application/json")
         .send()
         .await?;
 
-    let text = match response.status().as_http_status() {
-        StatusCode::OK => response.text().await?,
-        _ => return Err(crate::Error::from_response(response).await),
+    let (status, body) = (response.status(), response.into_body());
+    let text = match status {
+        StatusCode::OK => {
+            let bytes = body.into_bytes().await?;
+            String::from_utf8(bytes)?
+        }
+        _ => {
+            let response = http::Response::builder()
+                .status(status)
+                .body(body)
+                .unwrap();
+            return Err(crate::Error::from_response(response).await);
+        }
     };
 
     let wrapper: MediaContainerWrapper<TranscodeDecisionMediaContainer> =
@@ -916,11 +925,12 @@ impl TranscodeSession {
         if self.offline {
             builder = builder.timeout(None)
         }
-        let mut response = builder.send().await?;
+        let response = builder.send().await?;
 
-        match response.status().as_http_status() {
+        match response.status() {
             StatusCode::OK => {
-                response.copy_to(writer).await?;
+                let body = response.into_body();
+                body.copy_to(writer).await?;
                 Ok(())
             }
             _ => Err(crate::Error::from_response(response).await),
@@ -963,10 +973,10 @@ impl TranscodeSession {
             .send()
             .await?;
 
-        match response.status().as_http_status() {
+        match response.status() {
             // Sometimes the server will respond not found but still cancel the
             // session.
-            StatusCode::OK | StatusCode::NOT_FOUND => Ok(response.consume().await?),
+            StatusCode::OK | StatusCode::NOT_FOUND => Ok(()),
             _ => Err(crate::Error::from_response(response).await),
         }
     }
@@ -1009,16 +1019,17 @@ where
         .param("width", width.to_string())
         .param("height", height.to_string());
 
-    let mut response = client
+    let response = client
         .get(format!("{SERVER_TRANSCODE_ART}?{query}"))
         .send()
         .await?;
 
-    match response.status().as_http_status() {
+    match response.status() {
         // Sometimes the server will respond not found but still cancel the
         // session.
         StatusCode::OK => {
-            response.copy_to(writer).await?;
+            let body = response.into_body();
+            body.copy_to(writer).await?;
             Ok(())
         }
         _ => Err(crate::Error::from_response(response).await),

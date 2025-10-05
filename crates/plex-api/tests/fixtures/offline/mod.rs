@@ -3,7 +3,7 @@ pub mod myplex;
 pub mod server;
 
 use httpmock::MockServer;
-use isahc::{config::Configurable, HttpClient};
+use http_adapter::Client;
 use plex_api::HttpClientBuilder;
 use rstest::fixture;
 use std::ops::Deref;
@@ -38,8 +38,10 @@ pub fn mock_server() -> MockServer {
 
 #[fixture]
 pub fn client_builder(mock_server: MockServer) -> Mocked<HttpClientBuilder> {
-    let client_builder = HttpClientBuilder::new(mock_server.base_url()).set_http_client(
-        HttpClient::builder()
+    #[cfg(feature = "http-client-isahc")]
+    let http_client = {
+        use isahc::config::Configurable;
+        isahc::HttpClient::builder()
             // We're doing everything locally and using static mocks, no reasons to have big timeouts
             .timeout(std::time::Duration::from_secs(2))
             .connect_timeout(std::time::Duration::from_secs(1))
@@ -48,8 +50,22 @@ pub fn client_builder(mock_server: MockServer) -> Mocked<HttpClientBuilder> {
             // mockito does not support Expect-100 header, so we disabling it here
             .expect_continue(isahc::config::ExpectContinue::disabled())
             .build()
-            .expect("failed to create testing http client"),
-    );
+            .expect("failed to create testing http client");
+        http_adapter_isahc::from_client(http_client)
+    };
+    
+    #[cfg(all(feature = "http-client-reqwest", not(feature = "http-client-isahc")))]
+    let http_client = {
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(2))
+            .connect_timeout(std::time::Duration::from_secs(1))
+            .redirect(reqwest::redirect::Policy::none())
+            .build()
+            .expect("failed to create testing http client");
+        http_adapter_reqwest::from_client(client)
+    };
+    
+    let client_builder = HttpClientBuilder::new(mock_server.base_url()).set_http_client(http_client);
 
     Mocked::new(client_builder, mock_server)
 }

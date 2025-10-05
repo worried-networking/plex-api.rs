@@ -1351,7 +1351,6 @@ mod online {
     mod movie {
         use super::{super::fixtures::online::server::server, *};
         use hls_m3u8::{tags::VariantStream, MasterPlaylist, MediaPlaylist};
-        use isahc::AsyncReadResponseExt;
         use mp4::{AvcProfile, MediaType, Mp4Reader, TrackType};
         use plex_api::{
             library::{MediaItem, MediaItemWithTranscoding, MetadataItem, Movie},
@@ -2042,7 +2041,6 @@ mod online {
     mod music {
         use super::{super::fixtures::online::server::server, *};
         use hls_m3u8::{tags::VariantStream, MasterPlaylist, MediaPlaylist};
-        use isahc::AsyncReadResponseExt;
         use plex_api::{
             library::{MediaItem, MediaItemWithTranscoding, MetadataItem, Track},
             media_container::server::Feature,

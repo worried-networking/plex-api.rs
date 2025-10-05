@@ -29,11 +29,8 @@ pub enum Error {
         #[from]
         source: http::Error,
     },
-    #[error("{source}")]
-    HttpAdapterError {
-        #[from]
-        source: http_adapter::Error,
-    },
+    #[error("{0}")]
+    HttpAdapterError(#[from] http_adapter::Error),
     #[error("{source}")]
     StdIoError {
         #[from]

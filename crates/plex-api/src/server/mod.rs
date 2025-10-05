@@ -14,7 +14,6 @@ use self::{
 use crate::media_container::server::library::LibraryType;
 use crate::{
     http_client::HttpClient,
-    isahc_compat::StatusCodeExt,
     media_container::{
         server::{library::ContentDirectory, MediaProviderFeature, Server as ServerMediaContainer},
         MediaContainerWrapper,
@@ -28,7 +27,7 @@ use crate::{
 };
 use futures::AsyncWrite;
 use http::{StatusCode, Uri};
-use isahc::AsyncReadResponseExt;
+use http_adapter::Body;
 use std::{
     collections::HashMap,
     fmt::{self, Debug},

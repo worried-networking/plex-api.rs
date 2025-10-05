@@ -3,10 +3,9 @@ use std::{future::Future, marker::PhantomData, ops::RangeBounds};
 use enum_dispatch::enum_dispatch;
 use futures::AsyncWrite;
 use http::StatusCode;
-use isahc::AsyncReadResponseExt;
+use http_adapter::Body;
 
 use crate::{
-    isahc_compat::StatusCodeExt,
     media_container::{
         server::library::{
             CollectionMetadataSubtype, LibraryType, Media as MediaMetadata, Metadata,
@@ -278,10 +277,11 @@ impl<'a, M: MediaItem> Part<'a, M> {
             builder = builder.header("Range", format!("bytes={start}-{end}"))
         }
 
-        let mut response = builder.send().await?;
-        match response.status().as_http_status() {
+        let response = builder.send().await?;
+        match response.status() {
             StatusCode::OK | StatusCode::PARTIAL_CONTENT => {
-                response.copy_to(writer).await?;
+                let body = response.into_body();
+                body.copy_to(writer).await?;
                 Ok(())
             }
             _ => Err(crate::Error::from_response(response).await),

@@ -1,6 +1,6 @@
 use crate::{url::MYPLEX_DEFAULT_API_URL, Result};
 use http::{uri::PathAndQuery, StatusCode, Uri};
-use http_adapter::{Body, Client, HttpClient as AdapterHttpClient};
+use http_adapter::{Body, Client};
 use secrecy::{ExposeSecret, SecretString};
 use serde::{de::DeserializeOwned, Serialize};
 use std::time::Duration;
@@ -12,7 +12,7 @@ const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 pub struct HttpClient {
     pub api_url: Uri,
 
-    pub http_client: Box<dyn AdapterHttpClient>,
+    pub http_client: Client,
 
     /// `X-Plex-Provides` header value. Comma-separated list.
     ///
@@ -272,7 +272,7 @@ where
     PathAndQuery: TryFrom<P>,
     <PathAndQuery as TryFrom<P>>::Error: Into<http::Error>,
 {
-    http_client: &'a Box<dyn AdapterHttpClient>,
+    http_client: &'a Client,
     base_url: Uri,
     path_and_query: P,
     request_builder: http::request::Builder,
@@ -379,7 +379,7 @@ where
 }
 
 pub struct Request<'a, T> {
-    http_client: &'a Box<dyn AdapterHttpClient>,
+    http_client: &'a Client,
     request: http::Request<T>,
     timeout: Option<Duration>,
 }
@@ -390,11 +390,10 @@ where
 {
     /// Sends this request generating a response.
     pub async fn send(self) -> Result<http::Response<Body>> {
-        let body_data = self.request.body();
-        let (parts, _) = self.request.into_parts();
-        let request = http::Request::from_parts(parts, Body::empty());
+        let (parts, body) = self.request.into_parts();
+        let request = http::Request::from_parts(parts, body.into());
         
-        // TODO: Handle timeout
+        // TODO: Handle timeout properly
         Ok(self.http_client.execute(request).await?)
     }
 
@@ -513,7 +512,7 @@ impl HttpClientBuilder {
         self.client
     }
 
-    pub fn set_http_client(self, http_client: Box<dyn AdapterHttpClient>) -> Self {
+    pub fn set_http_client(self, http_client: Client) -> Self {
         Self {
             client: self.client.map(move |mut client| {
                 client.http_client = http_client;
@@ -648,32 +647,15 @@ impl HttpClientBuilder {
 }
 
 /// Creates a default HTTP client based on the enabled features.
-fn create_default_http_client() -> Result<Box<dyn AdapterHttpClient>> {
+fn create_default_http_client() -> Result<Client> {
     #[cfg(feature = "http-client-isahc")]
     {
-        use http_adapter::IsahcClient;
-        use isahc::config::{Configurable, RedirectPolicy};
-        
-        let client = isahc::HttpClient::builder()
-            .connect_timeout(Duration::from_secs(5))
-            .redirect_policy(RedirectPolicy::None)
-            .build()
-            .map_err(|e| crate::Error::HttpAdapterError { source: e.into() })?;
-        
-        Ok(Box::new(IsahcClient::new(client)))
+        return Ok(http_adapter_isahc::new());
     }
     
     #[cfg(all(feature = "http-client-reqwest", not(feature = "http-client-isahc")))]
     {
-        use http_adapter::ReqwestClient;
-        
-        let client = reqwest::Client::builder()
-            .connect_timeout(Duration::from_secs(5))
-            .redirect(reqwest::redirect::Policy::none())
-            .build()
-            .map_err(|e| crate::Error::HttpAdapterError { source: e.into() })?;
-        
-        Ok(Box::new(ReqwestClient::new(client)))
+        return Ok(http_adapter_reqwest::new());
     }
     
     #[cfg(not(any(feature = "http-client-isahc", feature = "http-client-reqwest")))]

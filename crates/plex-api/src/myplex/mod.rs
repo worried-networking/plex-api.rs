@@ -17,13 +17,12 @@ use self::{
 };
 use crate::{
     http_client::{HttpClient, HttpClientBuilder, Request},
-    isahc_compat::StatusCodeExt,
     media_container::server::Feature,
     url::{MYPLEX_SERVERS, MYPLEX_SIGNIN_PATH, MYPLEX_SIGNOUT_PATH, MYPLEX_USER_INFO_PATH},
     Error, Result,
 };
 use http::StatusCode;
-use isahc::AsyncBody;
+use http_adapter::Body;
 use secrecy::{ExposeSecret, SecretString};
 
 #[derive(Debug, Clone)]
