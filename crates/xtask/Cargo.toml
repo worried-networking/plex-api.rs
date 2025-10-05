@@ -16,7 +16,7 @@ flate2 = "^1.0"
 xshell = "^0.2.7"
 xflags = "^0.3"
 uuid = { version = "^1.2", features = ["v4"] }
-plex-api = { path = "../plex-api" }
+plex-api = { path = "../plex-api", features = ["http-client-isahc"] }
 tokio = { version = "^1.23", features = ["rt-multi-thread", "time"] }
 walkdir = "^2"
 semver = "^1.0.16"
