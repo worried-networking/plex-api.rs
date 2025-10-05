@@ -1,5 +1,6 @@
 use crate::media_container::server::Feature;
-use isahc::{AsyncBody, AsyncReadResponseExt, Response as HttpResponse};
+use bytes::Bytes;
+use http::Response as HttpResponse;
 use serde::Deserialize;
 use thiserror::Error;
 
@@ -30,20 +31,22 @@ pub enum Error {
         source: http::Error,
     },
     #[error("{source}")]
-    IsahcHttpError {
+    HttpAdapterError {
         #[from]
-        source: isahc::http::Error,
-    },
-    #[error("{source}")]
-    IsahcError {
-        #[from]
-        source: isahc::Error,
+        source: http_adapter::Error,
     },
     #[error("{source}")]
     StdIoError {
         #[from]
         source: std::io::Error,
     },
+    #[error("{source}")]
+    Utf8Error {
+        #[from]
+        source: std::string::FromUtf8Error,
+    },
+    #[error("Request timeout")]
+    Timeout,
     #[error("Error while communicating with MyPlexApi: {errors:?}.")]
     MyPlexErrorResponse { errors: Vec<Self> },
     #[error("Error occurred while communicating to MyPlex API: #{code} - {message}.")]
@@ -89,9 +92,9 @@ pub enum Error {
 const PLEX_API_ERROR_CODE_AUTH_OTP_REQUIRED: i32 = 1029;
 
 impl Error {
-    pub async fn from_response(mut response: HttpResponse<AsyncBody>) -> Self {
+    pub async fn from_response(response: HttpResponse<Bytes>) -> Self {
         let status_code = response.status().as_u16();
-        let response_body = match response.text().await {
+        let response_body = match String::from_utf8(response.body().to_vec()) {
             Ok(body) => body,
             Err(err) => {
                 return err.into();

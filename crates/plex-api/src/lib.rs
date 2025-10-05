@@ -9,10 +9,10 @@
 //!
 mod error;
 mod http_client;
-mod isahc_compat;
 pub mod media_container;
 mod myplex;
 mod player;
+mod response_ext;
 mod server;
 pub mod url;
 pub mod webhook;
