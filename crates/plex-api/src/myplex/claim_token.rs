@@ -34,10 +34,14 @@ impl ClaimToken {
     /// Loads the token from the API.
     #[tracing::instrument(level = "debug", skip_all)]
     pub async fn new(client: &HttpClient) -> Result<Self> {
-        let mut response = client.get(MYPLEX_CLAIM_TOKEN_PATH).send().await?;
-        match response.status().as_http_status() {
+        let response = client.get(MYPLEX_CLAIM_TOKEN_PATH).send().await?;
+        let status = response.status();
+        let body_bytes = response.into_body().into_bytes().await?;
+        let body = String::from_utf8(body_bytes)?;
+        
+        match status {
             StatusCode::OK => {
-                let token = response.json::<SuccessResponse>().await?.token;
+                let token = serde_json::from_str::<SuccessResponse>(&body)?.token;
                 Ok(Self {
                     token,
                     expires: OffsetDateTime::now_utc()
@@ -45,7 +49,7 @@ impl ClaimToken {
                 })
             }
             _ => {
-                let error: ErrorResponse = response.json().await?;
+                let error: ErrorResponse = serde_json::from_str(&body)?;
                 Err(Error::FailedToGetClaimToken(error.error))
             }
         }

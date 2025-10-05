@@ -1,5 +1,5 @@
 use crate::media_container::server::Feature;
-use isahc::{AsyncBody, AsyncReadResponseExt, Response as HttpResponse};
+use http_adapter::Body;
 use serde::Deserialize;
 use thiserror::Error;
 
@@ -30,19 +30,19 @@ pub enum Error {
         source: http::Error,
     },
     #[error("{source}")]
-    IsahcHttpError {
+    HttpAdapterError {
         #[from]
-        source: isahc::http::Error,
-    },
-    #[error("{source}")]
-    IsahcError {
-        #[from]
-        source: isahc::Error,
+        source: http_adapter::Error,
     },
     #[error("{source}")]
     StdIoError {
         #[from]
         source: std::io::Error,
+    },
+    #[error("{source}")]
+    Utf8Error {
+        #[from]
+        source: std::string::FromUtf8Error,
     },
     #[error("Error while communicating with MyPlexApi: {errors:?}.")]
     MyPlexErrorResponse { errors: Vec<Self> },
@@ -89,17 +89,24 @@ pub enum Error {
 const PLEX_API_ERROR_CODE_AUTH_OTP_REQUIRED: i32 = 1029;
 
 impl Error {
-    pub async fn from_response(mut response: HttpResponse<AsyncBody>) -> Self {
+    pub async fn from_response(response: http::Response<Body>) -> Self {
         let status_code = response.status().as_u16();
-        let response_body = match response.text().await {
-            Ok(body) => body,
+        let headers = response.headers().clone();
+        
+        let response_body = match response.into_body().into_bytes().await {
+            Ok(bytes) => match String::from_utf8(bytes) {
+                Ok(body) => body,
+                Err(err) => {
+                    return err.into();
+                }
+            },
             Err(err) => {
                 return err.into();
             }
         };
 
         let err: Result<MyPlexApiErrorResponse, Error>;
-        if let Some(content_type) = response.headers().get("Content-type") {
+        if let Some(content_type) = headers.get("Content-type") {
             match content_type.to_str().unwrap().split("; ").next().unwrap() {
                 "application/xml" => {
                     err = quick_xml::de::from_str::<MyPlexApiErrorResponse>(&response_body)

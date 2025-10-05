@@ -31,7 +31,7 @@ impl PinManager {
             .send()
             .await?;
 
-        if response.status().as_http_status() == StatusCode::NO_CONTENT {
+        if response.status() == StatusCode::NO_CONTENT {
             Ok(())
         } else {
             Err(Error::from_response(response).await)
@@ -44,15 +44,17 @@ impl PinManager {
             return Err(Error::ClientAuthenticated);
         }
 
-        let mut response = self
+        let response = self
             .client
             .post(MYPLEX_PINS)
             .header("Accept", "application/json")
             .send()
             .await?;
 
-        if response.status().as_http_status() == StatusCode::CREATED {
-            let pin = response.json::<PinInfo>().await?;
+        if response.status() == StatusCode::CREATED {
+            let body_bytes = response.into_body().into_bytes().await?;
+            let body = String::from_utf8(body_bytes)?;
+            let pin = serde_json::from_str::<PinInfo>(&body)?;
             Ok(Pin {
                 client: &self.client,
                 pin,

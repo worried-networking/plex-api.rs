@@ -8,10 +8,12 @@ description = "Library for communication with Plex server. Work in progress, not
 license = "MIT/Apache-2.0"
 repository = "https://github.com/andrey-yantsen/plex-api.rs"
 readme = "../../README.md"
-rust-version = "1.86.0"
+rust-version = "1.75.0"
 
 [dependencies]
-isahc = { version = "^1.7.2", features = ["json", "text-decoding"] }
+http-adapter = "0.3.0"
+isahc = { version = "^1.7.2", features = ["json", "text-decoding"], optional = true, default-features = false }
+reqwest = { version = "^0.12", optional = true, default-features = false, features = ["rustls-tls", "json"] }
 uuid = { version = "^1.2", features = ["v4", "serde"] }
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
@@ -59,6 +61,9 @@ default-features = false
 features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy", "run-cargo-fmt"]
 
 [features]
+default = []
+http-client-isahc = ["isahc"]
+http-client-reqwest = ["reqwest"]
 tests_deny_unknown_fields = []
 tests_only_online = []
 tests_only_online_unclaimed_server = ["tests_only_online"]
