@@ -1,24 +1,31 @@
-use crate::{isahc_compat::StatusCodeExt, url::MYPLEX_DEFAULT_API_URL, Result};
-use http::{uri::PathAndQuery, StatusCode, Uri};
-use isahc::{
-    config::{Configurable, RedirectPolicy},
-    http::{request::Builder, HeaderValue as IsahcHeaderValue},
-    AsyncBody, AsyncReadResponseExt, HttpClient as IsahcHttpClient, Request as HttpRequest,
-    Response as HttpResponse,
-};
+use crate::{url::MYPLEX_DEFAULT_API_URL, Result};
+use bytes::Bytes;
+use http::{uri::PathAndQuery, Request, Response, StatusCode, Uri};
+use http_body_util::{BodyExt, Full};
 use secrecy::{ExposeSecret, SecretString};
 use serde::{de::DeserializeOwned, Serialize};
 use std::time::Duration;
 use uuid::Uuid;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
-const DEFAULT_CONNECTION_TIMEOUT: Duration = Duration::from_secs(5);
+
+type BoxBody = http_body_util::combinators::BoxBody<Bytes, Box<dyn std::error::Error + Send + Sync>>;
+
+/// Type alias for the underlying HTTP client implementation.
+#[cfg(feature = "http-client-isahc")]
+pub type InnerHttpClient = http_client::isahc::IsahcClient;
+
+#[cfg(feature = "http-client-reqwest")]
+pub type InnerHttpClient = http_client::reqwest::ReqwestClient;
+
+#[cfg(not(any(feature = "http-client-isahc", feature = "http-client-reqwest")))]
+compile_error!("At least one HTTP client feature must be enabled: http-client-isahc or http-client-reqwest");
 
 #[derive(Debug, Clone)]
 pub struct HttpClient {
     pub api_url: Uri,
 
-    pub http_client: IsahcHttpClient,
+    pub http_client: InnerHttpClient,
 
     /// `X-Plex-Provides` header value. Comma-separated list.
     ///
@@ -89,7 +96,7 @@ pub struct HttpClient {
 }
 
 impl HttpClient {
-    fn prepare_request(&self) -> Builder {
+    fn prepare_request(&self) -> http::request::Builder {
         self.prepare_request_min()
             .header("X-Plex-Provides", &self.x_plex_provides)
             .header("X-Plex-Platform", &self.x_plex_platform)
@@ -103,8 +110,8 @@ impl HttpClient {
             .header("X-Plex-Features", &self.x_plex_features)
     }
 
-    fn prepare_request_min(&self) -> Builder {
-        let mut request = HttpRequest::builder()
+    fn prepare_request_min(&self) -> http::request::Builder {
+        let mut request = Request::builder()
             .header("X-Plex-Client-Identifier", &self.x_plex_client_identifier);
 
         if !self.x_plex_target_client_identifier.is_empty() {
@@ -278,10 +285,10 @@ where
     PathAndQuery: TryFrom<P>,
     <PathAndQuery as TryFrom<P>>::Error: Into<http::Error>,
 {
-    http_client: &'a IsahcHttpClient,
+    http_client: &'a InnerHttpClient,
     base_url: Uri,
     path_and_query: P,
-    request_builder: Builder,
+    request_builder: http::request::Builder,
     timeout: Option<Duration>,
 }
 
@@ -303,30 +310,31 @@ where
     }
 
     /// Adds a body to the request.
-    pub fn body<B>(self, body: B) -> Result<Request<'a, B>>
+    pub fn body<B>(self, body: B) -> Result<RequestWrapper<'a>>
     where
-        B: Into<AsyncBody>,
+        B: Into<String>,
     {
         let path_and_query = PathAndQuery::try_from(self.path_and_query).map_err(Into::into)?;
         let mut uri_parts = self.base_url.into_parts();
         uri_parts.path_and_query = Some(path_and_query);
         let uri = Uri::from_parts(uri_parts).map_err(Into::<http::Error>::into)?;
-        let uri_string = uri.to_string();
 
-        let mut builder = self.request_builder.uri(uri_string);
-        if let Some(timeout) = self.timeout {
-            builder = builder.timeout(timeout);
-        }
+        let body_string = body.into();
+        let request = self
+            .request_builder
+            .uri(uri)
+            .body(Full::new(Bytes::from(body_string)))?;
 
-        Ok(Request {
+        Ok(RequestWrapper {
             http_client: self.http_client,
-            request: builder.body(body)?,
+            request,
+            timeout: self.timeout,
         })
     }
 
     /// Serializes the provided struct as json and adds it as a body for the request.
     /// Header "Content-type: application/json" will be added along the way.
-    pub fn json_body<B>(self, body: &B) -> Result<Request<'a, String>>
+    pub fn json_body<B>(self, body: &B) -> Result<RequestWrapper<'a>>
     where
         B: ?Sized + Serialize,
     {
@@ -335,7 +343,7 @@ where
     }
 
     /// Adds a form encoded parameters to the request body.
-    pub fn form(self, params: &[(&str, &str)]) -> Result<Request<'a, String>> {
+    pub fn form(self, params: &[(&str, &str)]) -> Result<RequestWrapper<'a>> {
         let body = serde_urlencoded::to_string(params)?;
         self.header("Content-type", "application/x-www-form-urlencoded")
             .header("Content-Length", body.len().to_string())
@@ -346,10 +354,10 @@ where
     #[must_use]
     pub fn header<K, V>(self, key: K, value: V) -> Self
     where
-        isahc::http::header::HeaderName: TryFrom<K>,
-        <isahc::http::header::HeaderName as TryFrom<K>>::Error: Into<isahc::http::Error>,
-        isahc::http::header::HeaderValue: TryFrom<V>,
-        <isahc::http::header::HeaderValue as TryFrom<V>>::Error: Into<isahc::http::Error>,
+        http::header::HeaderName: TryFrom<K>,
+        <http::header::HeaderName as TryFrom<K>>::Error: Into<http::Error>,
+        http::header::HeaderValue: TryFrom<V>,
+        <http::header::HeaderValue as TryFrom<V>>::Error: Into<http::Error>,
     {
         Self {
             http_client: self.http_client,
@@ -361,58 +369,75 @@ where
     }
 
     /// Sends this request generating a response.
-    pub async fn send(self) -> Result<HttpResponse<AsyncBody>> {
-        self.body(())?.send().await
+    pub async fn send(self) -> Result<Response<BoxBody>> {
+        self.body("")?.send().await
     }
 
     /// Sends this request and attempts to decode the response as JSON.
-    pub async fn json<T: DeserializeOwned + Unpin>(self) -> Result<T> {
-        self.body(())?.json().await
+    pub async fn json<T: DeserializeOwned>(self) -> Result<T> {
+        self.body("")?.json().await
     }
 
     /// Sends this request and attempts to decode the response as XML.
-    pub async fn xml<T: DeserializeOwned + Unpin>(self) -> Result<T> {
-        self.body(())?.xml().await
+    pub async fn xml<T: DeserializeOwned>(self) -> Result<T> {
+        self.body("")?.xml().await
     }
 
     /// Sends this request, verifies success and then consumes any response.
     pub async fn consume(self) -> Result<()> {
-        let mut response = self.header("Accept", "application/json").send().await?;
+        let response = self.header("Accept", "application/json").send().await?;
 
-        match response.status().as_http_status() {
-            StatusCode::OK => {
-                response.consume().await?;
-                Ok(())
-            }
+        match response.status() {
+            StatusCode::OK => Ok(()),
             _ => Err(crate::Error::from_response(response).await),
         }
     }
 }
 
-pub struct Request<'a, T> {
-    http_client: &'a IsahcHttpClient,
-    request: HttpRequest<T>,
+pub struct RequestWrapper<'a> {
+    http_client: &'a InnerHttpClient,
+    request: Request<Full<Bytes>>,
+    timeout: Option<Duration>,
 }
 
-impl<'a, T> Request<'a, T>
-where
-    T: Into<AsyncBody>,
-{
+impl<'a> RequestWrapper<'a> {
     /// Sends this request generating a response.
-    pub async fn send(self) -> Result<HttpResponse<AsyncBody>> {
-        Ok(self.http_client.send_async(self.request).await?)
+    pub async fn send(self) -> Result<Response<BoxBody>> {
+        let response = if let Some(timeout) = self.timeout {
+            tokio::time::timeout(
+                timeout,
+                http_client::HttpClient::send(self.http_client, self.request),
+            )
+            .await
+            .map_err(|_| crate::Error::HttpClientError {
+                source: "Request timeout".into(),
+            })??
+        } else {
+            http_client::HttpClient::send(self.http_client, self.request).await?
+        };
+
+        Ok(response.map(|body| body.boxed()))
     }
 
     /// Sends this request and attempts to decode the response as JSON.
-    pub async fn json<R: DeserializeOwned + Unpin>(mut self) -> Result<R> {
-        let headers = self.request.headers_mut();
-        headers.insert("Accept", IsahcHeaderValue::from_static("application/json"));
+    pub async fn json<R: DeserializeOwned>(mut self) -> Result<R> {
+        self.request
+            .headers_mut()
+            .insert("Accept", http::header::HeaderValue::from_static("application/json"));
 
-        let mut response = self.send().await?;
+        let response = self.send().await?;
 
-        match response.status().as_http_status() {
+        match response.status() {
             StatusCode::OK | StatusCode::CREATED | StatusCode::ACCEPTED => {
-                let body = response.text().await?;
+                let body_bytes = response.into_body().collect().await
+                    .map_err(|e| crate::Error::HttpClientError {
+                        source: format!("Failed to read response body: {}", e),
+                    })?
+                    .to_bytes();
+                let body = String::from_utf8(body_bytes.to_vec())
+                    .map_err(|e| crate::Error::HttpClientError {
+                        source: format!("Invalid UTF-8 in response: {}", e),
+                    })?;
                 match serde_json::from_str(&body) {
                     Ok(response) => Ok(response),
                     Err(error) => {
@@ -431,15 +456,24 @@ where
     }
 
     /// Sends this request and attempts to decode the response as XML.
-    pub async fn xml<R: DeserializeOwned + Unpin>(mut self) -> Result<R> {
-        let headers = self.request.headers_mut();
-        headers.insert("Accept", IsahcHeaderValue::from_static("application/xml"));
+    pub async fn xml<R: DeserializeOwned>(mut self) -> Result<R> {
+        self.request
+            .headers_mut()
+            .insert("Accept", http::header::HeaderValue::from_static("application/xml"));
 
-        let mut response = self.send().await?;
+        let response = self.send().await?;
 
-        match response.status().as_http_status() {
+        match response.status() {
             StatusCode::OK | StatusCode::CREATED | StatusCode::ACCEPTED => {
-                let body = response.text().await?;
+                let body_bytes = response.into_body().collect().await
+                    .map_err(|e| crate::Error::HttpClientError {
+                        source: format!("Failed to read response body: {}", e),
+                    })?
+                    .to_bytes();
+                let body = String::from_utf8(body_bytes.to_vec())
+                    .map_err(|e| crate::Error::HttpClientError {
+                        source: format!("Invalid UTF-8 in response: {}", e),
+                    })?;
                 match quick_xml::de::from_str(&body) {
                     Ok(response) => Ok(response),
                     Err(error) => {
@@ -470,13 +504,15 @@ impl Default for HttpClientBuilder {
 
         let random_uuid = Uuid::new_v4();
 
+        #[cfg(feature = "http-client-isahc")]
+        let http_client = http_client::isahc::IsahcClient::new();
+
+        #[cfg(feature = "http-client-reqwest")]
+        let http_client = http_client::reqwest::ReqwestClient::new();
+
         let client = HttpClient {
             api_url: Uri::from_static(MYPLEX_DEFAULT_API_URL),
-            http_client: IsahcHttpClient::builder()
-                .connect_timeout(DEFAULT_CONNECTION_TIMEOUT)
-                .redirect_policy(RedirectPolicy::None)
-                .build()
-                .expect("failed to create default http client"),
+            http_client,
             x_plex_provides: String::from("controller"),
             x_plex_product: option_env!("CARGO_PKG_NAME")
                 .unwrap_or("plex-api")
@@ -511,7 +547,7 @@ impl HttpClientBuilder {
         self.client
     }
 
-    pub fn set_http_client(self, http_client: IsahcHttpClient) -> Self {
+    pub fn set_http_client(self, http_client: InnerHttpClient) -> Self {
         Self {
             client: self.client.map(move |mut client| {
                 client.http_client = http_client;
@@ -642,5 +678,36 @@ impl HttpClientBuilder {
                 client
             }),
         }
+    }
+}
+
+/// Response body extension trait to read the body as text.
+pub trait ResponseExt {
+    /// Read the response body as a string.
+    async fn text(self) -> Result<String>;
+    
+    /// Consume the response body without reading it.
+    async fn consume(self) -> Result<()>;
+}
+
+impl ResponseExt for Response<BoxBody> {
+    async fn text(self) -> Result<String> {
+        let body_bytes = self.into_body().collect().await
+            .map_err(|e| crate::Error::HttpClientError {
+                source: format!("Failed to read response body: {}", e),
+            })?
+            .to_bytes();
+        String::from_utf8(body_bytes.to_vec())
+            .map_err(|e| crate::Error::HttpClientError {
+                source: format!("Invalid UTF-8 in response: {}", e),
+            })
+    }
+    
+    async fn consume(self) -> Result<()> {
+        let _ = self.into_body().collect().await
+            .map_err(|e| crate::Error::HttpClientError {
+                source: format!("Failed to consume response body: {}", e),
+            })?;
+        Ok(())
     }
 }
