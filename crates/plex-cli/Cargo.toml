@@ -14,5 +14,5 @@ plex-api = { version = ">= 0.0.10", path = "../plex-api" }
 tokio = { version = "^1.23", features = ["macros", "rt-multi-thread", "time", "fs"] }
 anyhow = "^1.0"
 xflags = "^0.3"
-indicatif = { version = "^0.17.3", features = ["tokio"] }
+indicatif = { version = "^0.18.0", features = ["tokio"] }
 tokio-util = { version = "0.7.7", features = ["compat", "futures-io"] }
