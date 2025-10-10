@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.4](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-cli-v0.0.3...plex-cli-v0.0.4) (2025-10-10)
+
+
+### Features
+
+* **wait:** add error details ([b7cd005](https://github.com/andrey-yantsen/plex-api.rs/commit/b7cd005b6fe4cf47235b45dc8056e8a9c2b94d1f))
+
+
+### Miscellaneous
+
+* **deps:** update indicatif requirement from ^0.17.3 to ^0.18.0 ([ecd27bf](https://github.com/andrey-yantsen/plex-api.rs/commit/ecd27bf10a4a964c47ee56f9782ca2c098558c1d))
+
 ## [0.0.3](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-cli-v0.0.2...plex-cli-v0.0.3) (2023-05-19)
 
 
