@@ -1,5 +1,98 @@
 # Changelog
 
+## [0.0.12](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-api-v0.0.11...plex-api-v0.0.12) (2025-10-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* add a new `content` field to Metadata
+* bump MSRV to 1.86.0
+* add a few new fields to the Part struct
+* bump msrv to 1.70.0
+
+### build
+
+* bump MSRV to 1.86.0 ([021a827](https://github.com/andrey-yantsen/plex-api.rs/commit/021a8272642c2d45d61be566e16e870a277df488))
+
+
+### Features
+
+* add a new `content` field to Metadata ([34e217d](https://github.com/andrey-yantsen/plex-api.rs/commit/34e217dad7a6a970daa7a3e870e4830445971520))
+* add ApiVersion property to Server ([9516d54](https://github.com/andrey-yantsen/plex-api.rs/commit/9516d541c5d597a8439886b1621ecc8b3cc914ab))
+* Allow transcoding entire media with server media selection ([dd6d0e5](https://github.com/andrey-yantsen/plex-api.rs/commit/dd6d0e5731b99a7d44fdcd74bec057ed053d3e41))
+* Implement DownloadQueue ([3025cb4](https://github.com/andrey-yantsen/plex-api.rs/commit/3025cb45646edb9021f5276ab31749abad3e69bd))
+
+
+### Bug Fixes
+
+* add `async_std::test` to async tests ([efba3f5](https://github.com/andrey-yantsen/plex-api.rs/commit/efba3f5198cb439662a749816dd23b5a14ca5de3))
+* Add missing attributes ([20a0438](https://github.com/andrey-yantsen/plex-api.rs/commit/20a043856c66efeb3bc633d4c88f9e509b4f1c16))
+* Fixes test failures by switching to tokio runtime for tests ([449c072](https://github.com/andrey-yantsen/plex-api.rs/commit/449c072de497387243dc0f688064a786149e6bf4))
+* make photo_auto_tag field on the server optional ([345effe](https://github.com/andrey-yantsen/plex-api.rs/commit/345effef0cb0f228cc50f1d327a05a824a0aa0b4))
+* migrate to the new sysinfo version ([ff70260](https://github.com/andrey-yantsen/plex-api.rs/commit/ff70260e5ee6623ce9ba369661293f548ec685db))
+* Safer deserialisation for skip_parent and skip_count fields ([039db5a](https://github.com/andrey-yantsen/plex-api.rs/commit/039db5a728112211783d088ca9950f844b7099eb))
+
+
+### Miscellaneous
+
+* add a few new fields to the Part struct ([032372d](https://github.com/andrey-yantsen/plex-api.rs/commit/032372d3f05e1c03e5743d805341a38932bea2f7))
+* bump msrv to 1.70.0 ([fc7b85f](https://github.com/andrey-yantsen/plex-api.rs/commit/fc7b85f93014a48b1fd2c47ec3cab61cfd49359c))
+* **clippy:** fix a new warning ([9561575](https://github.com/andrey-yantsen/plex-api.rs/commit/9561575b99de30e761aa5b183ea1a6a1319a54d7))
+* **deps:** update dash-mpd requirement from ^0.10.0 to ^0.11.0 ([f8055c7](https://github.com/andrey-yantsen/plex-api.rs/commit/f8055c77d766c86091831ba0c35259be070e0158))
+* **deps:** update dash-mpd requirement from ^0.11.0 to ^0.12.0 ([17a2493](https://github.com/andrey-yantsen/plex-api.rs/commit/17a2493bcf367497dd03499195da1ffa599bc746))
+* **deps:** update dash-mpd requirement from ^0.12.0 to ^0.13.0 ([f68a881](https://github.com/andrey-yantsen/plex-api.rs/commit/f68a881f49a79f83a328b5b122acec765c3dc950))
+* **deps:** update dash-mpd requirement from ^0.13.0 to ^0.14.0 ([6138dff](https://github.com/andrey-yantsen/plex-api.rs/commit/6138dff08b18096f5308487f107dc2d6232e4810))
+* **deps:** update dash-mpd requirement from ^0.14.0 to ^0.15.0 ([3277356](https://github.com/andrey-yantsen/plex-api.rs/commit/3277356c64a22a02a86c867ad7091f293f232b86))
+* **deps:** update dash-mpd requirement from ^0.15.0 to ^0.16.0 ([3ae07a6](https://github.com/andrey-yantsen/plex-api.rs/commit/3ae07a63e04e34f03a93e9794f174bf482d4ec17))
+* **deps:** update dash-mpd requirement from ^0.16.0 to ^0.18.4 ([ed70fc8](https://github.com/andrey-yantsen/plex-api.rs/commit/ed70fc86941517024467b643a622df213e8642b7))
+* **deps:** update dash-mpd requirement from ^0.9.0 to ^0.10.0 ([afe3697](https://github.com/andrey-yantsen/plex-api.rs/commit/afe3697fd27f293d33befe59f8276b26e12072d3))
+* **deps:** update hls_m3u8 requirement from ^0.4.1 to ^0.5.1 ([f0d6c7d](https://github.com/andrey-yantsen/plex-api.rs/commit/f0d6c7d8977114155b333cd08fb318a378018767))
+* **deps:** update httpmock requirement from ^0.6 to ^0.7 ([c0962c8](https://github.com/andrey-yantsen/plex-api.rs/commit/c0962c88498251f33258c50102199c022e420197))
+* **deps:** update httpmock requirement from ^0.7 to ^0.8 ([6223ed5](https://github.com/andrey-yantsen/plex-api.rs/commit/6223ed5a6a3b8ab7a5c9702c23af48519309bbb5))
+* **deps:** update image requirement from ^0.24.5 to ^0.25.0 ([0fe9ff6](https://github.com/andrey-yantsen/plex-api.rs/commit/0fe9ff66e8c114454cb2f3e35b4679827233c364))
+* **deps:** update monostate requirement from ^0.1.2 to ^1.0.0 ([3f1250a](https://github.com/andrey-yantsen/plex-api.rs/commit/3f1250aae3ac5a7f3c71bc6d03c278c61ab7723c))
+* **deps:** update mp3-metadata requirement from ^0.3.4 to ^0.4.0 ([1add8f0](https://github.com/andrey-yantsen/plex-api.rs/commit/1add8f063ac7d52b3b7f1b1e4c94d4fe93f344e3))
+* **deps:** update mp4 requirement from ^0.13.0 to ^0.14.0 ([2ce4b35](https://github.com/andrey-yantsen/plex-api.rs/commit/2ce4b35857c437b8824845f651ad85e518e92f69))
+* **deps:** update quick-xml requirement from ^0.28 to ^0.29 ([cc1960a](https://github.com/andrey-yantsen/plex-api.rs/commit/cc1960a178aba34e6f720b54c139061a41ad4525))
+* **deps:** update quick-xml requirement from ^0.29 to ^0.30 ([4ee3353](https://github.com/andrey-yantsen/plex-api.rs/commit/4ee33537409c434a516b911e19a3c4facfb36ebb))
+* **deps:** update quick-xml requirement from ^0.30 to ^0.31 ([7da1603](https://github.com/andrey-yantsen/plex-api.rs/commit/7da1603791e611b9a6cce75120d8f41e90dbbd2b))
+* **deps:** update quick-xml requirement from ^0.31 to ^0.36 ([64ccbfe](https://github.com/andrey-yantsen/plex-api.rs/commit/64ccbfe85478e475121e8b54f54340c598519cbd))
+* **deps:** update rstest requirement from ^0.17.0 to ^0.18.1 ([6ed9f9e](https://github.com/andrey-yantsen/plex-api.rs/commit/6ed9f9ea0a2b7ca30d4055f8293a853f0ce4a20a))
+* **deps:** update rstest requirement from ^0.18.1 to ^0.19.0 ([100d1df](https://github.com/andrey-yantsen/plex-api.rs/commit/100d1dfda7ec1df47388970c07cafc2996e754e4))
+* **deps:** update rstest requirement from ^0.19.0 to ^0.21.0 ([a1e2e7b](https://github.com/andrey-yantsen/plex-api.rs/commit/a1e2e7bfad14fc668e6a6aa0dec7ceb7aeaaeffa))
+* **deps:** update sysinfo requirement from 0.29.9 to 0.30.1 ([d588b42](https://github.com/andrey-yantsen/plex-api.rs/commit/d588b422bce829f45eddf41c35966ab5b411e73b))
+* **deps:** update thiserror requirement from ^1.0 to ^2.0 ([ca112e9](https://github.com/andrey-yantsen/plex-api.rs/commit/ca112e98e3b18455f346ff27182b673b0ad52492))
+* **deps:** upgrade http ([752f466](https://github.com/andrey-yantsen/plex-api.rs/commit/752f4668b4fcc12a726076e4651987502bf4ffb3))
+* disable default-features for dash-mpd ([18db6fd](https://github.com/andrey-yantsen/plex-api.rs/commit/18db6fd0c96f8a2452153f52bb37aec4ba91a5fc))
+* fix a new warning from Clippy ([f73997f](https://github.com/andrey-yantsen/plex-api.rs/commit/f73997fba185bbe13968756f27ff83648038771e))
+* fix breaking changes after httpmock update ([6b14a01](https://github.com/andrey-yantsen/plex-api.rs/commit/6b14a01e1f2111dffff58d85bea4f42a8fa2993e))
+* make Clippy happy by using clone_from() ([7d6bbff](https://github.com/andrey-yantsen/plex-api.rs/commit/7d6bbffcf47fc8a385e382c525bf9bf635325044))
+* remove the unnecessary TryFrom imports ([af1469f](https://github.com/andrey-yantsen/plex-api.rs/commit/af1469f209a262bd671a6cf9784830d1241978d7))
+* remove unnecessary Server import from a test ([6d88730](https://github.com/andrey-yantsen/plex-api.rs/commit/6d88730a36d8aa356bc4372f882687f9c5b85fc6))
+* replace ToString impl with Display ([1acdcb8](https://github.com/andrey-yantsen/plex-api.rs/commit/1acdcb849b16b8e9cf296e72aacc7fe1ae5b3da0))
+* update Feature enum ([4391913](https://github.com/andrey-yantsen/plex-api.rs/commit/43919136e439808e6639a471853efecbb43b3f02))
+* update Feature enum ([3f2c338](https://github.com/andrey-yantsen/plex-api.rs/commit/3f2c33837e164ffd0b5f0b3217642ed7346785df))
+* update Feature enum ([636f8ed](https://github.com/andrey-yantsen/plex-api.rs/commit/636f8edbde1ad3eacf5b88bf715d76754f1fe6bd))
+* update Feature enum ([b3defb1](https://github.com/andrey-yantsen/plex-api.rs/commit/b3defb164c0fca28704cc05de10684f2f5d09a58))
+* update Feature enum ([7a09b2e](https://github.com/andrey-yantsen/plex-api.rs/commit/7a09b2e39714cb49b32837fc8b27674e4730aa15))
+* update Feature enum ([67d9660](https://github.com/andrey-yantsen/plex-api.rs/commit/67d9660c88e79244cc3d3c4bd0117c27012c665d))
+* update Feature enum ([ea2a37f](https://github.com/andrey-yantsen/plex-api.rs/commit/ea2a37f72a1c17df0a4f4131c8a2f8de19217e45))
+* update Feature enum ([6fbef90](https://github.com/andrey-yantsen/plex-api.rs/commit/6fbef90873920110d7e7ec0b33b1bb3d0d09f609))
+* update Feature enum ([e6f5a91](https://github.com/andrey-yantsen/plex-api.rs/commit/e6f5a910ec19bfb34db0e890a583f1da2413c821))
+* update Feature enum ([b84c723](https://github.com/andrey-yantsen/plex-api.rs/commit/b84c723ddec835b744bae1ccc2e5e806c1f7038e))
+* update Feature enum ([7fe5ad9](https://github.com/andrey-yantsen/plex-api.rs/commit/7fe5ad94f2d4551f227aea3cf2f7c7f5217559fa))
+* update Feature enum ([92bee65](https://github.com/andrey-yantsen/plex-api.rs/commit/92bee6544bada811ada85c81d2baf8a9aeeef431))
+* update Feature enum ([62022a0](https://github.com/andrey-yantsen/plex-api.rs/commit/62022a0b13c9683a783079d73682384b94f087cf))
+* update Feature enum ([48403a6](https://github.com/andrey-yantsen/plex-api.rs/commit/48403a6c4d73d949533fce3751e25a9ae09fbc82))
+* update Feature enum ([396c782](https://github.com/andrey-yantsen/plex-api.rs/commit/396c782de5c6f599de9f505ba97763f63f142d29))
+* update Feature enum ([59c374e](https://github.com/andrey-yantsen/plex-api.rs/commit/59c374e392b49b8c89dae031f1d151b1b6b9dfa8))
+* update Feature enum ([2f63e14](https://github.com/andrey-yantsen/plex-api.rs/commit/2f63e145ffbdaba2977dd18d4eb8f7cd73148024))
+* update Feature enum ([4c4d579](https://github.com/andrey-yantsen/plex-api.rs/commit/4c4d579214556e201e9818c682e28e1a0d4c06f7))
+* update Feature enum ([709d49d](https://github.com/andrey-yantsen/plex-api.rs/commit/709d49dde1daf3ee5e6b0cad5f15fd9824c45b00))
+* update Feature enum ([5060f35](https://github.com/andrey-yantsen/plex-api.rs/commit/5060f3503fd0a3036a3ac68c24975933c65015d7))
+* update Feature enum ([800852b](https://github.com/andrey-yantsen/plex-api.rs/commit/800852b89e0d354be0a679202466d7bdf9e82492))
+* update Feature enum ([f3b703c](https://github.com/andrey-yantsen/plex-api.rs/commit/f3b703c65fec7bf42f689ef9fb15ae362c5f22f6))
+
 ## [0.0.11](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-api-v0.0.10...plex-api-v0.0.11) (2023-06-02)
 
 
