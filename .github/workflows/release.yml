@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         crate:
+          - http-adapter-isahc
           - plex-api
           - plex-cli
     steps:

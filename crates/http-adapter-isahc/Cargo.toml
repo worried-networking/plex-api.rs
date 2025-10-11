@@ -1,0 +1,43 @@
+[package]
+name = "http-adapter-isahc"
+version = "0.1.0"
+edition = "2021"
+authors = ["Andrey Yantsen <andrey@janzen.su>"]
+description = "HTTP adapter implementation for isahc"
+license = "MIT/Apache-2.0"
+repository = "https://github.com/andrey-yantsen/plex-api.rs"
+readme = "README.md"
+
+[package.metadata.workspaces]
+independent = true
+
+[lib]
+name = "http_adapter_isahc"
+path = "src/lib.rs"
+
+[dependencies]
+http-adapter = "0.3"
+isahc = { version = "1.7.2", default-features = false }
+
+[features]
+default = ["isahc/default"]
+http2 = ["isahc/http2"]
+static-curl = ["isahc/static-curl"]
+text-decoding = ["isahc/text-decoding"]
+cookies = ["isahc/cookies"]
+json = ["isahc/json"]
+psl = ["isahc/psl"]
+
+# When enabling `spnego`, the build fails on CI due to missing `gssapi.h` on a
+# linux machine:
+#
+# curl/lib/urldata.h:196:12: fatal error: gssapi.h: No such file or directory
+#
+# hence commending it out for now.
+# spnego = ["isahc/spnego"]
+
+unstable-interceptors = ["isahc/unstable-interceptors"]
+
+[dev-dependencies]
+httpmock = "0.8"
+tokio = { version = "1", features = ["macros", "rt"] }
