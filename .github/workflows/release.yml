@@ -21,7 +21,7 @@ jobs:
           package-name: ${{ matrix.crate }}
           release-type: rust
           token: "${{ secrets.PAT_GITHUB_PR }}"
-          bootstrap-sha: "0478c04c4d92a5ba95a6933663c46f9269695bd5"
+          bootstrap-sha: "752f4668b4fcc12a726076e4651987502bf4ffb3"
           versioning-strategy: "always-bump-patch"
           monorepo-tags: true
           bump-minor-pre-major: true
