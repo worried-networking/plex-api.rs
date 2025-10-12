@@ -1,0 +1,40 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "752f4668b4fcc12a726076e4651987502bf4ffb3",
+  "changelog-sections": [
+    {"type": "feat", "section": "Features", "hidden": false},
+    {"type": "fix", "section": "Bug Fixes", "hidden": false},
+    {"type": "chore", "section": "Miscellaneous", "hidden": false},
+    {"type": "test", "section": "Tests", "hidden": true},
+    {"type": "ci", "section": "Continuous Integration", "hidden": true},
+    {"type": "docs", "section": "Documentation", "hidden": false},
+    {"type": "refactor", "section": "Code Refactoring", "hidden": true},
+    {"type": "style", "section": "Styles", "hidden": true}
+  ],
+  "packages": {
+    "crates/http-adapter-isahc": {
+      "package-name": "http-adapter-isahc",
+      "release-type": "rust",
+      "monorepo-tags": true,
+      "versioning": "always-bump-patch",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
+    },
+    "crates/plex-api": {
+      "package-name": "plex-api",
+      "release-type": "rust",
+      "monorepo-tags": true,
+      "versioning": "always-bump-patch",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
+    },
+    "crates/plex-cli": {
+      "package-name": "plex-cli",
+      "release-type": "rust",
+      "monorepo-tags": true,
+      "versioning": "always-bump-patch",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
+    }
+  }
+}
