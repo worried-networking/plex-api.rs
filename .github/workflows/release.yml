@@ -7,6 +7,27 @@ name: release-please
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: "${{ secrets.PAT_GITHUB_PR }}"
+          config-file: .github/release-please-config.json
+          manifest-file: .github/release-please-manifest.json
+      - name: Print release-please outputs
+        run: |
+          cat <<END
+          ${{ toJSON(steps.release.outputs) }}
+          END
+        continue-on-error: true
+
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         crate:
@@ -14,45 +35,14 @@ jobs:
           - plex-api
           - plex-cli
     steps:
-      - uses: googleapis/release-please-action@v3
-        id: release
-        with:
-          path: "crates/${{ matrix.crate }}"
-          package-name: ${{ matrix.crate }}
-          release-type: rust
-          token: "${{ secrets.PAT_GITHUB_PR }}"
-          bootstrap-sha: "752f4668b4fcc12a726076e4651987502bf4ffb3"
-          versioning-strategy: "always-bump-patch"
-          monorepo-tags: true
-          bump-minor-pre-major: true
-          bump-patch-for-minor-pre-major: true
-          changelog-types: |
-            [{"type":"feat","section":"Features","hidden":false},
-             {"type":"fix","section":"Bug Fixes","hidden":false},
-             {"type":"chore","section":"Miscellaneous","hidden":false},
-             {"type":"test","section":"Tests","hidden":true},
-             {"type":"ci","section":"Continuous Integration","hidden":true},
-             {"type":"docs","section":"Documentation","hidden":false},
-             {"type":"refactor","section":"Code Refactoring","hidden":true},
-             {"type":"style","section":"Styles","hidden":true}]
-
-      - name: Print release-please outputs
-        run: |
-          cat <<END
-          ${{toJSON(steps.release.outputs)}}
-          END
-        continue-on-error: true
-
-      # The logic below handles the crates.io publication:
       - name: Checkout sources
+        if: contains(needs.release-please.outputs.paths_released, format('crates/{0}', matrix.crate))
         uses: actions/checkout@v5
-        # these if statements ensure that a publication only occurs when
-        # a new release is created:
-        if: steps.release.outputs.releases_created == 'true'
       - name: Install stable toolchain
+        if: contains(needs.release-please.outputs.paths_released, format('crates/{0}', matrix.crate))
         uses: dtolnay/rust-toolchain@stable
-        if: steps.release.outputs.releases_created == 'true'
-      - run: cargo publish -p ${{ matrix.crate }}
+      - name: Publish crate
+        if: contains(needs.release-please.outputs.paths_released, format('crates/{0}', matrix.crate))
+        run: cargo publish -p ${{ matrix.crate }}
         env:
           CARGO_REGISTRY_TOKEN: "${{ secrets.CRATES_IO_TOKEN }}"
-        if: steps.release.outputs.releases_created == 'true'
