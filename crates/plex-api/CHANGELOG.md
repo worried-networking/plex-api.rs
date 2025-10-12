@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.13](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-api-v0.0.12...plex-api-v0.0.13) (2025-10-12)
+
+
+### Miscellaneous
+
+* update Feature enum ([971f1ae](https://github.com/andrey-yantsen/plex-api.rs/commit/971f1ae647c45eeeebcac8acf464b2d486a4845c))
+
 ## [0.0.12](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-api-v0.0.11...plex-api-v0.0.12) (2025-10-10)
 
 
