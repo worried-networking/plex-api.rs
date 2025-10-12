@@ -11,30 +11,24 @@
     {"type": "refactor", "section": "Code Refactoring", "hidden": true},
     {"type": "style", "section": "Styles", "hidden": true}
   ],
+  "include-component-in-tag": true,
+  "separate-pull-requests": true,
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
   "packages": {
     "crates/http-adapter-isahc": {
       "package-name": "http-adapter-isahc",
-      "release-type": "rust",
-      "monorepo-tags": true,
-      "versioning": "always-bump-patch",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
+      "release-type": "rust"
     },
     "crates/plex-api": {
       "package-name": "plex-api",
       "release-type": "rust",
-      "monorepo-tags": true,
-      "versioning": "always-bump-patch",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
+      "versioning": "always-bump-patch"
     },
     "crates/plex-cli": {
       "package-name": "plex-cli",
       "release-type": "rust",
-      "monorepo-tags": true,
-      "versioning": "always-bump-patch",
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
+      "versioning": "always-bump-patch"
     }
   }
 }
