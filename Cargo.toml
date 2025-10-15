@@ -2,7 +2,6 @@
 
 resolver = "2"
 members = [
-    "crates/http-adapter-isahc",
     "crates/plex-api",
     "crates/plex-api-test-helper",
     "crates/plex-cli",
