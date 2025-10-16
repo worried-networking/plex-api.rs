@@ -1,4 +1,5 @@
 {
   "crates/plex-api": "0.0.12",
-  "crates/plex-cli": "0.0.4"
+  "crates/plex-cli": "0.0.4",
+  "crates/http-adapter-isahc": "0.1.0"
 }
