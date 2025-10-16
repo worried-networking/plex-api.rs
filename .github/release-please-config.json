@@ -16,10 +16,6 @@
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": true,
   "packages": {
-    "crates/http-adapter-isahc": {
-      "package-name": "http-adapter-isahc",
-      "release-type": "rust"
-    },
     "crates/plex-api": {
       "package-name": "plex-api",
       "release-type": "rust",
