@@ -8,6 +8,7 @@
 //! TODO
 //!
 mod error;
+mod field;
 mod http_client;
 mod isahc_compat;
 pub mod media_container;
@@ -18,6 +19,7 @@ pub mod url;
 pub mod webhook;
 
 pub use error::Error;
+pub use field::MetadataField;
 pub use http_client::{HttpClient, HttpClientBuilder};
 pub use myplex::{
     account::RestrictionProfile, device, discover, pin::PinManager, sharing, MyPlex, MyPlexBuilder,
