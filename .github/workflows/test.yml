@@ -24,7 +24,7 @@ jobs:
       - name: "Git: enable longpaths"
         run: git config --global core.longpaths true
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
@@ -47,7 +47,7 @@ jobs:
         plex_server_version: ["1.42.2.10156-f737b826c","1.40.5.8921-836b34c27","1.32.8.7639-fb6452ebf"]
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.8.1
@@ -69,7 +69,7 @@ jobs:
       X_PLEX_CLIENT_IDENTIFIER: "${{ secrets.X_PLEX_CLIENT_IDENTIFIER_FREE }}"
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
@@ -94,7 +94,7 @@ jobs:
       X_PLEX_CLIENT_IDENTIFIER: "${{ secrets.X_PLEX_CLIENT_IDENTIFIER_PLEXPASS }}"
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
@@ -119,7 +119,7 @@ jobs:
       X_PLEX_CLIENT_IDENTIFIER: "${{ secrets.X_PLEX_CLIENT_IDENTIFIER_FREE }}"
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
@@ -143,7 +143,7 @@ jobs:
       X_PLEX_CLIENT_IDENTIFIER: "${{ secrets.X_PLEX_CLIENT_IDENTIFIER_FREE }}"
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
@@ -163,7 +163,7 @@ jobs:
       options: --security-opt seccomp=unconfined
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Generate code coverage
         run: |
