@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.13](https://github.com/worried-networking/plex-api.rs/compare/plex-api-v0.0.12...plex-api-v0.0.13) (2025-12-01)
+
+
+### Miscellaneous
+
+* **deps:** update dash-mpd requirement from ^0.18.4 to ^0.19.0 ([a912df2](https://github.com/worried-networking/plex-api.rs/commit/a912df291fd1ec71dc844e9ad4764f419f83bcbf))
+* **deps:** update dash-mpd requirement from ^0.18.4 to ^0.19.0 ([fdf35e8](https://github.com/worried-networking/plex-api.rs/commit/fdf35e873029528ede21bde02ca4166218b0511b))
+* update Feature enum ([0a1cdd7](https://github.com/worried-networking/plex-api.rs/commit/0a1cdd7345571ad1c6c6e2ce5190f2361567cd50))
+* update Feature enum ([e91c339](https://github.com/worried-networking/plex-api.rs/commit/e91c3399ee62a4ce79a8117ea4097796cb13287c))
+* update Feature enum ([76ae0c1](https://github.com/worried-networking/plex-api.rs/commit/76ae0c18ed5aa264ebe2f2cae3ca2c932a5f713f))
+* update Feature enum ([8288ce3](https://github.com/worried-networking/plex-api.rs/commit/8288ce3ba158a59363e8a049c5c777c1f66cbdaf))
+* update Feature enum ([971f1ae](https://github.com/worried-networking/plex-api.rs/commit/971f1ae647c45eeeebcac8acf464b2d486a4845c))
+
 ## [0.0.12](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-api-v0.0.11...plex-api-v0.0.12) (2025-10-10)
 
 
