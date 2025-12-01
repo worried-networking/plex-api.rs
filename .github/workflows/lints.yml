@@ -22,7 +22,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{steps.current_msrv.outputs.msrv}}
-      - uses: Swatinem/rust-cache@v2.8.1
+      - uses: Swatinem/rust-cache@v2.8.2
         with:
           shared-key: cache
       - name: Check
@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v6
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.8.1
+      - uses: Swatinem/rust-cache@v2.8.2
         with:
           shared-key: cache
       - name: Run cargo check
@@ -59,7 +59,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: "rustfmt,clippy"
-      - uses: Swatinem/rust-cache@v2.8.1
+      - uses: Swatinem/rust-cache@v2.8.2
         with:
           shared-key: cache
       - name: Run cargo fmt
