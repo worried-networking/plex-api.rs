@@ -12,7 +12,7 @@ pull_request_rules:
       - author=dependabot[bot]
       - check-success=Test on a real server (anonymous) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (anonymous) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (anonymous) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (anonymous) (1.43.4.10903-e5521bd8c) # supported-version-3
       - check-success=MSRV
     actions:
       queue:
@@ -23,7 +23,7 @@ pull_request_rules:
       - title=Update the media_container::server::Feature enum
       - check-success=Test on a real server (anonymous) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (anonymous) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (anonymous) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (anonymous) (1.43.4.10903-e5521bd8c) # supported-version-3
     actions:
       queue:
         name: default
@@ -33,7 +33,7 @@ pull_request_rules:
       - title=Update the list of tested PMS releases
       - check-success=Test on a real server (anonymous) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (anonymous) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (anonymous) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (anonymous) (1.43.4.10903-e5521bd8c) # supported-version-3
     actions:
       queue:
         name: default
@@ -53,19 +53,19 @@ pull_request_rules:
       - check-success=MSRV
       - check-success=Test on a real server (anonymous) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (anonymous) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (anonymous) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (anonymous) (1.43.4.10903-e5521bd8c) # supported-version-3
       - check-success=Test on a real server (authenticated free account) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (authenticated free account) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (authenticated free account) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (authenticated free account) (1.43.4.10903-e5521bd8c) # supported-version-3
       - check-success=Test on a real server (authenticated plexpass account) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (authenticated plexpass account) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (authenticated plexpass account) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (authenticated plexpass account) (1.43.4.10903-e5521bd8c) # supported-version-3
       - check-success=Test on a real server (unclaimed, authenticated free account) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (unclaimed, authenticated free account) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (unclaimed, authenticated free account) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (unclaimed, authenticated free account) (1.43.4.10903-e5521bd8c) # supported-version-3
       - check-success=Test on a real server (authenticated free account with shared from plexpass server) (1.32.8.7639-fb6452ebf) # supported-version-1
       - check-success=Test on a real server (authenticated free account with shared from plexpass server) (1.41.6.9685-d301f511a) # supported-version-2
-      - check-success=Test on a real server (authenticated free account with shared from plexpass server) (1.43.2.10687-563d026ea) # supported-version-3
+      - check-success=Test on a real server (authenticated free account with shared from plexpass server) (1.43.4.10903-e5521bd8c) # supported-version-3
     actions:
       queue:
         name: default
