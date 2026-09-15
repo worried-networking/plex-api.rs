@@ -482,6 +482,11 @@ pub enum Feature {
     )]
     Ios14PrivacyBanner,
     #[serde(
+        rename = "ipv6-setting",
+        alias = "fc24f0ec-0617-4bbe-98da-50e555302e60"
+    )]
+    Ipv6Setting,
+    #[serde(
         rename = "item_clusters",
         alias = "b58d7f28-7b4a-49bb-97a7-152645505f28"
     )]
@@ -704,6 +709,11 @@ pub enum Feature {
     )]
     PlayedBadges,
     #[serde(
+        rename = "plexpass_5_year_sku",
+        alias = "2c3311e6-a303-4c24-b560-f498a24e08ac"
+    )]
+    Plexpass5YearSku,
+    #[serde(
         rename = "plexpass_from_billing_context",
         alias = "007fb90d-2224-4d24-bd42-e87ffde13558"
     )]
@@ -795,6 +805,7 @@ pub enum Feature {
         rename = "rwp-intro-price-copy",
         alias = "2c752d0d-7411-4cc6-a5b3-66f57b904126"
     )]
+    #[deprecated]
     RwpIntroPriceCopy,
     #[serde(
         rename = "save-to-library",
