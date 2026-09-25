@@ -740,7 +740,7 @@ pub struct Metadata {
     #[serde(default, with = "time::serde::timestamp::option")]
     pub updated_at: Option<OffsetDateTime>,
     #[serde(default, deserialize_with = "deserialize_option_number_from_string")]
-    pub loudness_analysis_version: Option<u32>,
+    pub loudness_analysis_version: Option<f32>,
     #[serde(default, deserialize_with = "optional_boolish")]
     pub has_premium_extras: Option<bool>,
     #[serde(default, deserialize_with = "optional_boolish")]
