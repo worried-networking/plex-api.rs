@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.0.13](https://github.com/worried-networking/plex-api.rs/compare/plex-api-v0.0.12...plex-api-v0.0.13) (2026-09-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* accept floating point values for the loudness analysis version ([#737](https://github.com/worried-networking/plex-api.rs/issues/737))
+* **deps:** bump sysinfo to 0.39.2 and MSRV to 1.95
+
+### Bug Fixes
+
+* accept floating point values for the loudness analysis version ([#737](https://github.com/worried-networking/plex-api.rs/issues/737)) ([f32c4a3](https://github.com/worried-networking/plex-api.rs/commit/f32c4a3e312ef115f9727ecc3d452280af24ddc2))
+
+
+### Miscellaneous
+
+* **deps:** bump all dependencies to latest compatible versions ([bbbf4e9](https://github.com/worried-networking/plex-api.rs/commit/bbbf4e97b3e862b124e6d3f92eb7c0d1b2deb91c))
+* **deps:** bump sysinfo to 0.39.2 and MSRV to 1.95 ([50f6084](https://github.com/worried-networking/plex-api.rs/commit/50f6084dc2683f19e38dba03ee8decea32298f9c))
+* **deps:** update dash-mpd requirement from ^0.18.4 to ^0.19.0 ([a912df2](https://github.com/worried-networking/plex-api.rs/commit/a912df291fd1ec71dc844e9ad4764f419f83bcbf))
+* **deps:** update dash-mpd requirement from ^0.18.4 to ^0.19.0 ([fdf35e8](https://github.com/worried-networking/plex-api.rs/commit/fdf35e873029528ede21bde02ca4166218b0511b))
+* **deps:** update dash-mpd requirement from ^0.19.0 to ^0.20.0 ([2b04a52](https://github.com/worried-networking/plex-api.rs/commit/2b04a52e4382819b95ab27b5757d335d9f2d0938))
+* **deps:** update dash-mpd requirement from ^0.19.0 to ^0.20.0 ([2d2fdd8](https://github.com/worried-networking/plex-api.rs/commit/2d2fdd82c73701e4fece309bf95a7252e4cd400d))
+* **deps:** update hls_m3u8 requirement from ^0.5.1 to ^0.7.0 ([95a1d46](https://github.com/worried-networking/plex-api.rs/commit/95a1d465a8ac961db38370848204ef6854b7f1e3))
+* **deps:** update hls_m3u8 requirement from ^0.5.1 to ^0.7.0 ([8d4d32a](https://github.com/worried-networking/plex-api.rs/commit/8d4d32a0a916ed4035acad6674a079d46b40e913))
+* **deps:** update quick-xml requirement from ^0.38 to ^0.39 ([6165326](https://github.com/worried-networking/plex-api.rs/commit/6165326876d7ff4408688ea54698abf9cc675a64))
+* **deps:** update quick-xml requirement from ^0.38 to ^0.39 ([01e9d6b](https://github.com/worried-networking/plex-api.rs/commit/01e9d6beeca56a7f1d0fc2d7b8e661146b666f45))
+* **deps:** update quick-xml requirement from ^0.39 to ^0.40 ([b250ba6](https://github.com/worried-networking/plex-api.rs/commit/b250ba6743fc5c5902176e457fe8b215f281aa43))
+* **deps:** update quick-xml requirement from ^0.39 to ^0.40 ([3f9a242](https://github.com/worried-networking/plex-api.rs/commit/3f9a2421099d3cb946df1af892f2039f5c55480f))
+* **deps:** update quick-xml requirement from ^0.40 to ^0.41 ([17fd827](https://github.com/worried-networking/plex-api.rs/commit/17fd8276bca567735072fd896233e9a0943368f5))
+* **deps:** update quick-xml requirement from ^0.40 to ^0.41 ([1b6f85e](https://github.com/worried-networking/plex-api.rs/commit/1b6f85e4054fe9c7f8f38a8c0d5375ba89c81fe4))
+* **deps:** update quick-xml requirement from ^0.41 to ^0.42 ([857c132](https://github.com/worried-networking/plex-api.rs/commit/857c13231f243e154d990984bae38bac87647c3e))
+* **deps:** update quick-xml requirement from ^0.41 to ^0.42 ([d8f1856](https://github.com/worried-networking/plex-api.rs/commit/d8f18562d0f8318590e284c34a9e58eec26a97dc))
+* **deps:** update rstest requirement from ^0.26.1 to ^0.27.0 ([2bb3748](https://github.com/worried-networking/plex-api.rs/commit/2bb37487b54fb535c8ebd5ba66b9d6f98873e0d9))
+* **deps:** update rstest requirement from ^0.26.1 to ^0.27.0 ([a42c0c1](https://github.com/worried-networking/plex-api.rs/commit/a42c0c110b020df39f43dd07e28ed14265a39f13))
+* **deps:** update sysinfo requirement from 0.37.2 to 0.38.0 ([3704316](https://github.com/worried-networking/plex-api.rs/commit/3704316c62901def7abdee1b63d0602b11a4a8e5))
+* **deps:** update sysinfo requirement from 0.37.2 to 0.38.0 ([fc87c34](https://github.com/worried-networking/plex-api.rs/commit/fc87c343aa6b450895ac9ee687b225b17d65111d))
+* **deps:** upgrade isahc to 2.0.0, remove http version shims ([94f0b88](https://github.com/worried-networking/plex-api.rs/commit/94f0b885b1f2f06dce7e5c7381b3d00382ecbeb1))
+* update Feature enum ([0b8ad9e](https://github.com/worried-networking/plex-api.rs/commit/0b8ad9ed1742d321ecb030df8d5be1d43567564f))
+* update Feature enum ([0a1cdd7](https://github.com/worried-networking/plex-api.rs/commit/0a1cdd7345571ad1c6c6e2ce5190f2361567cd50))
+* update Feature enum ([e91c339](https://github.com/worried-networking/plex-api.rs/commit/e91c3399ee62a4ce79a8117ea4097796cb13287c))
+* update Feature enum ([76ae0c1](https://github.com/worried-networking/plex-api.rs/commit/76ae0c18ed5aa264ebe2f2cae3ca2c932a5f713f))
+* update Feature enum ([8288ce3](https://github.com/worried-networking/plex-api.rs/commit/8288ce3ba158a59363e8a049c5c777c1f66cbdaf))
+* update Feature enum ([971f1ae](https://github.com/worried-networking/plex-api.rs/commit/971f1ae647c45eeeebcac8acf464b2d486a4845c))
+
 ## [0.0.12](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-api-v0.0.11...plex-api-v0.0.12) (2025-10-10)
 
 
