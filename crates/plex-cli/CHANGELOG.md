@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/worried-networking/plex-api.rs/compare/plex-cli-v0.0.4...plex-cli-v0.0.5) (2026-09-25)
+
+
+### Miscellaneous
+
+* **deps:** bump all dependencies to latest compatible versions ([bbbf4e9](https://github.com/worried-networking/plex-api.rs/commit/bbbf4e97b3e862b124e6d3f92eb7c0d1b2deb91c))
+
 ## [0.0.4](https://github.com/andrey-yantsen/plex-api.rs/compare/plex-cli-v0.0.3...plex-cli-v0.0.4) (2025-10-10)
 
 
