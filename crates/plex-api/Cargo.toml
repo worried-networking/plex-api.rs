@@ -46,7 +46,7 @@ regex = "^1.7"
 [dev-dependencies]
 httpmock = "^0.8.3"
 plex-api-test-helper = { path = "../plex-api-test-helper" }
-rstest = "^0.27.0"
+rstest = "^0.28.0"
 rpassword = "^7.2"
 dash-mpd = { version = "^0.20.0", default-features = false }
 hls_m3u8 = "^0.7.0"
