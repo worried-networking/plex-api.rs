@@ -1,4 +1,4 @@
 {
-  "crates/plex-api": "0.0.12",
+  "crates/plex-api": "0.0.13",
   "crates/plex-cli": "0.0.4"
 }
