@@ -657,7 +657,7 @@ derive_metadata_item!(Season);
 
 impl Season {
     pub fn season_number(&self) -> Option<u32> {
-        self.metadata.index
+        self.metadata.index.ok()
     }
 
     /// Retrieves all of the episodes in this season.
@@ -742,7 +742,7 @@ impl Episode {
 
     /// Returns the number of this episode within the season.
     pub fn episode_number(&self) -> Option<u32> {
-        self.metadata.index
+        self.metadata.index.ok()
     }
 
     /// Retrieves the season that this episode is from.
@@ -873,7 +873,7 @@ impl Transcodable for Track {
 impl Track {
     /// Returns the number of this track within the album.
     pub fn track_number(&self) -> Option<u32> {
-        self.metadata.index
+        self.metadata.index.ok()
     }
 
     /// Retrieves the album for this track.

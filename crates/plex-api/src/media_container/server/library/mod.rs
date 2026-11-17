@@ -1,11 +1,14 @@
 mod guid;
 mod metadata_type;
 
-use crate::media_container::{
-    helpers::deserialize_option_string_from_number,
-    helpers::{deserialize_option_datetime_from_timestamp, optional_boolish},
-    preferences::Preferences,
-    MediaContainer,
+use crate::{
+    media_container::{
+        helpers::deserialize_option_string_from_number,
+        helpers::{deserialize_option_datetime_from_timestamp, optional_boolish},
+        preferences::Preferences,
+        MediaContainer,
+    },
+    MetadataField,
 };
 pub use guid::Guid;
 pub use metadata_type::*;
@@ -414,8 +417,8 @@ pub struct Part {
 #[cfg_attr(feature = "tests_deny_unknown_fields", serde(deny_unknown_fields))]
 #[serde(rename_all = "camelCase")]
 pub struct Media {
-    #[serde(default, deserialize_with = "deserialize_option_string_from_number")]
-    pub id: Option<String>,
+    #[serde(default)]
+    pub id: MetadataField<String>,
     pub duration: Option<u64>,
     pub bitrate: Option<u32>,
     pub width: Option<u32>,
@@ -714,7 +717,8 @@ pub struct Metadata {
     pub banner: Option<String>,
     pub icon: Option<String>,
 
-    pub index: Option<u32>,
+    #[serde(default)]
+    pub index: MetadataField<u32>,
     #[serde(rename = "playlistItemID")]
     pub playlist_item_id: Option<u32>,
     #[serde(default, deserialize_with = "deserialize_option_number_from_string")]
