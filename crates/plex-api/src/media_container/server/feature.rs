@@ -47,6 +47,11 @@ pub enum Feature {
     )]
     AndroidPiP,
     #[serde(
+        rename = "apple-pay-purchases",
+        alias = "5f09fe50-f141-4440-8293-7a18a7a8daf0"
+    )]
+    ApplePayPurchases,
+    #[serde(
         rename = "artist-tv",
         alias = "2797e341-b062-46ed-862f-0acbba5dd522"
     )]
@@ -422,6 +427,11 @@ pub enum Feature {
     )]
     FriendRequestPushNotifications,
     #[serde(
+        rename = "gifts-page",
+        alias = "093d49aa-e4f1-44f5-bf40-760184bd22ad"
+    )]
+    GiftsPage,
+    #[serde(
         rename = "global-continue-watching",
         alias = "4742780c-af9d-4b44-bf5b-7b27e3369aa8"
     )]
@@ -481,6 +491,11 @@ pub enum Feature {
         alias = "39dbdd84-8339-4736-96a1-0eb105cc2e08"
     )]
     Ios14PrivacyBanner,
+    #[serde(
+        rename = "ipv6-setting",
+        alias = "fc24f0ec-0617-4bbe-98da-50e555302e60"
+    )]
+    Ipv6Setting,
     #[serde(
         rename = "item_clusters",
         alias = "b58d7f28-7b4a-49bb-97a7-152645505f28"
@@ -704,6 +719,11 @@ pub enum Feature {
     )]
     PlayedBadges,
     #[serde(
+        rename = "plexpass_5_year_sku",
+        alias = "2c3311e6-a303-4c24-b560-f498a24e08ac"
+    )]
+    Plexpass5YearSku,
+    #[serde(
         rename = "plexpass_from_billing_context",
         alias = "007fb90d-2224-4d24-bd42-e87ffde13558"
     )]
@@ -754,6 +774,11 @@ pub enum Feature {
     )]
     RateLimitClientToken,
     #[serde(
+        rename = "rating_reminder_in_app_notifications",
+        alias = "7dcb10a8-7181-4089-a8f8-0c7cfac043bd"
+    )]
+    RatingReminderInAppNotifications,
+    #[serde(
         rename = "reactions_push_notifications_settings",
         alias = "34ddfac9-3a76-459a-974d-591520b809dd"
     )]
@@ -795,6 +820,7 @@ pub enum Feature {
         rename = "rwp-intro-price-copy",
         alias = "2c752d0d-7411-4cc6-a5b3-66f57b904126"
     )]
+    #[deprecated]
     RwpIntroPriceCopy,
     #[serde(
         rename = "save-to-library",
